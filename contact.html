@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#013068">
+<title data-i18n="title_contact">تواصل معنا | ADIC — عقد دارين للصناعة</title>
+<meta name="description" content="تواصل مع فريق مبيعات شركة عقد دارين الصناعية للحصول على عروض الأسعار والكميات.">
+<link rel="icon" type="image/png" href="assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a href="#main" class="skip-link" data-i18n="skip">تخطٍ إلى المحتوى</a>
+
+<header class="header" id="header">
+  <div class="container nav">
+    <a href="index.html" class="brand" aria-label="ADIC">
+      <img class="brand-logo-light" src="assets/img/logo-white.png" alt="ADIC">
+      <img class="brand-logo-dark" src="assets/img/logo.png" alt="ADIC">
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="primary">
+      <a href="index.html" data-i18n="nav_home">الرئيسية</a>
+      <a href="index.html#about" data-i18n="nav_about">عن الشركة</a>
+      <a href="products.html" data-i18n="nav_products">المنتجات</a>
+      <a href="index.html#capabilities" data-i18n="nav_capabilities">قدراتنا</a>
+      <a href="index.html#network" data-i18n="nav_network">شبكة التوزيع</a>
+      <a href="contact.html" class="active" data-i18n="nav_contact">تواصل معنا</a>
+    </nav>
+    <div class="nav-tools">
+      <button class="lang-btn" id="langBtn" aria-label="Switch language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        <span data-i18n="lang_toggle">EN</span>
+      </button>
+      <a href="contact.html" class="btn nav-cta-top" data-i18n="nav_cta">اطلب عرض سعر</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<main id="main">
+<section class="page-hero">
+  <div class="hero__bg" aria-hidden="true"><span class="blob b1"></span><span class="blob b3"></span></div>
+  <div class="container page-hero__inner">
+    <div class="breadcrumb"><a href="index.html" data-i18n="nav_home">الرئيسية</a><span>/</span><span data-i18n="nav_contact">تواصل معنا</span></div>
+    <h1 data-i18n="cp_title">نسعد بخدمتك</h1>
+    <p data-i18n="cp_sub">فريق المبيعات والفريق التجاري جاهز للرد على استفساراتك.</p>
+  </div>
+  <div class="hero-wave" aria-hidden="true">
+    <svg viewBox="0 0 1440 70" preserveAspectRatio="none"><path fill="#eef3f9" d="M0,40 C240,75 480,5 720,30 C960,55 1200,75 1440,35 L1440,70 L0,70 Z"></path></svg>
+  </div>
+</section>
+
+<section class="section" style="padding-top:3rem">
+  <div class="container contact-grid">
+    <!-- Form -->
+    <div class="contact-card" data-reveal="left">
+      <h3 data-i18n="cp_form_title">أرسل لنا رسالة</h3>
+      <form id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="cName"><span data-i18n="cp_name">الاسم الكامل</span> <span class="req">*</span></label>
+            <input type="text" id="cName" name="name" required>
+            <div class="err" data-i18n="cp_required">هذا الحقل مطلوب</div>
+          </div>
+          <div class="field">
+            <label for="cEmail"><span data-i18n="cp_email">البريد الإلكتروني</span> <span class="req">*</span></label>
+            <input type="email" id="cEmail" name="email" required>
+            <div class="err" data-err-email data-i18n="cp_email_invalid">يرجى إدخال بريد إلكتروني صحيح</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="cPhone" data-i18n="cp_phone">رقم الجوال</label>
+            <input type="tel" id="cPhone" name="phone" dir="ltr">
+          </div>
+          <div class="field">
+            <label for="cCompany" data-i18n="cp_company">اسم الشركة (اختياري)</label>
+            <input type="text" id="cCompany" name="company">
+          </div>
+        </div>
+        <div class="field">
+          <label for="cInterest" data-i18n="cp_interest">المنتج محل الاهتمام (اختياري)</label>
+          <select id="cInterest" name="interest"></select>
+        </div>
+        <div class="field">
+          <label for="cSubject"><span data-i18n="cp_subject">الموضوع</span> <span class="req">*</span></label>
+          <input type="text" id="cSubject" name="subject" required>
+          <div class="err" data-i18n="cp_required">هذا الحقل مطلوب</div>
+        </div>
+        <div class="field">
+          <label for="cMessage"><span data-i18n="cp_message">رسالتك</span> <span class="req">*</span></label>
+          <textarea id="cMessage" name="message" required></textarea>
+          <div class="err" data-i18n="cp_required">هذا الحقل مطلوب</div>
+        </div>
+        <button type="submit" class="btn btn--lg btn--block" id="submitBtn">
+          <span data-i18n="cp_send">إرسال الرسالة</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        </button>
+        <div class="form-status" id="formStatus" data-i18n="cp_success">تم تجهيز رسالتك! سيتم فتح بريدك لإكمال الإرسال.</div>
+      </form>
+    </div>
+
+    <!-- Info -->
+    <div data-reveal="right">
+      <h3 class="section-title" style="font-size:1.4rem;margin-bottom:1.2rem" data-i18n="cp_info_title">معلومات التواصل</h3>
+      <div class="info-stack">
+        <div class="info-item">
+          <div class="ii-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3.08 4.18 2 2 0 0 1 5 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L9 10a16 16 0 0 0 5 5l1.36-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></div>
+          <div>
+            <div class="ii-label" data-i18n="cp_phone_l">الهاتف</div>
+            <div class="ii-val"><a href="#" data-contact="tel" dir="ltr">+966 11 455 5582</a></div>
+            <div class="ii-sub" data-i18n="cp_sales">إدارة المبيعات</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="ii-ico" style="background:linear-gradient(135deg,#1faf54,#25D366)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.1 1.2Z"/></svg></div>
+          <div>
+            <div class="ii-label" data-i18n="cp_whatsapp_l">واتساب</div>
+            <div class="ii-val"><a href="#" data-contact="wa" dir="ltr">+966 53 993 7299</a></div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="ii-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4Z"/><path d="m4 6 8 6 8-6"/></svg></div>
+          <div>
+            <div class="ii-label" data-i18n="cp_email_l">البريد الإلكتروني</div>
+            <div class="ii-val"><a href="#" data-contact="email">info@adic.sa</a></div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="ii-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
+          <div>
+            <div class="ii-label" data-i18n="cp_web_l">الموقع الإلكتروني</div>
+            <div class="ii-val"><a href="#" data-contact="web">www.adic.sa</a></div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="ii-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <div>
+            <div class="ii-label" data-i18n="cp_addr_l">العنوان</div>
+            <div class="ii-val" data-i18n="cp_addr_v">المملكة العربية السعودية، الرياض — السلي، حي المشاعل، شارع الفيروز</div>
+            <div class="ii-sub" data-i18n="cp_license">ترخيص صناعي رقم 1439100186017 — بتاريخ 18/9/1437هـ</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="ii-ico" style="background:linear-gradient(135deg,#a9791b,#d4a23a)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <div>
+            <div class="ii-label" data-i18n="cp_hours_l">ساعات العمل</div>
+            <div class="ii-val" data-i18n="cp_hours_v">الأحد – الخميس: 8:00 ص – 5:00 م</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-wrap" data-reveal>
+        <iframe title="ADIC location" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          src="https://maps.google.com/maps?q=Al%20Sulay%2C%20Riyadh%2C%20Saudi%20Arabia&t=&z=12&ie=UTF8&iwloc=&output=embed"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <img src="assets/img/logo-white.png" alt="ADIC">
+        <p data-i18n="foot_about">شركة سعودية متخصصة في تصنيع وتوريد منتجات الورق الصحي…</p>
+        <p class="serve" data-i18n="foot_serve">نخدم في كل مدن المملكة</p>
+        <div class="footer__private"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6Z"/></svg><span data-i18n="foot_private">يوجد لدينا طباعة خاصة — Private Label</span></div>
+      </div>
+      <div>
+        <h4 data-i18n="foot_links">روابط سريعة</h4>
+        <ul class="foot-links">
+          <li><a href="index.html" data-i18n="nav_home">الرئيسية</a></li>
+          <li><a href="index.html#about" data-i18n="nav_about">عن الشركة</a></li>
+          <li><a href="products.html" data-i18n="nav_products">المنتجات</a></li>
+          <li><a href="index.html#network" data-i18n="nav_network">شبكة التوزيع</a></li>
+          <li><a href="contact.html" data-i18n="nav_contact">تواصل معنا</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="foot_brands">علاماتنا</h4>
+        <ul class="foot-links" id="footBrands"></ul>
+      </div>
+      <div>
+        <h4 data-i18n="foot_contact">تواصل معنا</h4>
+        <ul class="foot-contact">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg><span data-i18n="cp_addr_v">الرياض — السلي</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3.08 4.18 2 2 0 0 1 5 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L9 10a16 16 0 0 0 5 5l1.36-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg><a href="#" data-contact="tel" dir="ltr">+966 11 455 5582</a></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4Z"/><path d="m4 6 8 6 8-6"/></svg><a href="#" data-contact="email">info@adic.sa</a></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><a href="#" data-contact="web">www.adic.sa</a></li>
+        </ul>
+        <div class="foot-emblems">
+          <img src="assets/img/saudi-made-white.png" alt="Saudi Made">
+          <img src="assets/img/vision-white.png" alt="Saudi Vision 2030">
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span id="year"></span> <span data-i18n="brand_name">عقد دارين للصناعة</span> (ADIC). <span data-i18n="foot_rights">جميع الحقوق محفوظة.</span></span>
+      <span class="made"><span data-i18n="foot_made">صُمّم بعناية لـ</span> <b>ADIC</b></span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.1 1.2Z"/></svg></a>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# OS / editor junk
+Thumbs.db
+ehthumbs.db
+.DS_Store
+*.log
+
+# never commit private keys / secrets
+adic_godaddy
+*.pem
+id_rsa*
+id_ed25519*
+*_PRIVATE_KEY*
+*.ppk

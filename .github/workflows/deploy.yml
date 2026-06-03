@@ -1,0 +1,30 @@
+name: Deploy ADIC site to GoDaddy
+
+# Deploys automatically on every push to main, and can be run manually too.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to GoDaddy Managed WordPress
+        uses: godaddy-wordpress/git-deploy-poc@v0.0.1
+        with:
+          # >>> Replace these two with the values GoDaddy shows after you click Connect <<<
+          remote_host: 'rp4.311.myftpupload.com'   # your SSH/SFTP host
+          ssh_user: 'REPLACE_WITH_GODADDY_DEPLOY_USER'
+
+          # Private key (base64) stored in repo Settings > Secrets > Actions as PRIVATE_KEY
+          ssh_private_key: ${{ secrets.PRIVATE_KEY }}
+
+          # Empty = deploy to the site root (httpdocs)
+          deployment_dest: ''
+
+          # This is a STATIC site (no WordPress) -> turn the WordPress health check OFF
+          enable_health_check: 'no'
