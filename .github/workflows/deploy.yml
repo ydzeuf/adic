@@ -1,30 +1,31 @@
 name: Deploy ADIC site to GoDaddy
 
-# Deploys automatically on every push to main, and can be run manually too.
+# Auto-deploy on every push to main; also runnable manually from the Actions tab.
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      deployment_dest:
+        description: 'Target server directory, leave blank for root directory'
+        required: false
+        default: ''
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout Repository Code
+        uses: actions/checkout@v3
 
-      - name: Deploy to GoDaddy Managed WordPress
-        uses: godaddy-wordpress/git-deploy-poc@v0.0.1
+      - name: Synchronize Files with GoDaddy WordPress Hosting Server
+        uses: godaddy-wordpress/gd-wordpress-deployer@v1
         with:
-          # >>> Replace these two with the values GoDaddy shows after you click Connect <<<
-          remote_host: 'rp4.311.myftpupload.com'   # your SSH/SFTP host
-          ssh_user: 'REPLACE_WITH_GODADDY_DEPLOY_USER'
-
-          # Private key (base64) stored in repo Settings > Secrets > Actions as PRIVATE_KEY
+          remote_host: "rp4.311.myftpupload.com"
+          ssh_user: "git_deployer_7ed4fc4a31_1176735"
           ssh_private_key: ${{ secrets.PRIVATE_KEY }}
-
-          # Empty = deploy to the site root (httpdocs)
-          deployment_dest: ''
-
-          # This is a STATIC site (no WordPress) -> turn the WordPress health check OFF
-          enable_health_check: 'no'
+          # blank = deploy the whole repo to the site root (httpdocs)
+          deployment_dest: ${{ github.event.inputs.deployment_dest }}
+          # This is a STATIC site (no WordPress) — skip the WP health check,
+          # otherwise the deploy is rolled back when no WordPress is found.
+          enable_health_check: "no"
