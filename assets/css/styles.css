@@ -335,7 +335,8 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 .brands-track{display:flex;gap:1.2rem;width:max-content;animation:marquee 26s linear infinite}
 .brands-marquee:hover .brands-track{animation-play-state:paused}
 @keyframes marquee{to{transform:translateX(calc(-50% - .6rem))}}
-[dir="rtl"] .brands-track{animation-direction:reverse}
+/* Note: do NOT use animation-direction:reverse for RTL — iOS Safari won't
+   animate it, leaving the Arabic marquee frozen. Same leftward scroll for both. */
 .brand-chip{
   display:flex;align-items:center;gap:.8rem;padding:1rem 1.8rem;border-radius:var(--r-pill);
   background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-1);white-space:nowrap}
