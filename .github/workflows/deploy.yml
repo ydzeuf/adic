@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Synchronize Files with GoDaddy WordPress Hosting Server
         uses: godaddy-wordpress/gd-wordpress-deployer@v1
@@ -26,6 +26,11 @@ jobs:
           ssh_private_key: ${{ secrets.PRIVATE_KEY }}
           # blank = deploy the whole repo to the site root (httpdocs)
           deployment_dest: ${{ github.event.inputs.deployment_dest }}
-          # This is a STATIC site (no WordPress) — skip the WP health check,
-          # otherwise the deploy is rolled back when no WordPress is found.
-          enable_health_check: "no"
+          # Keep health check ON: with an empty (root) destDir, the action
+          # mis-parses "--skipHealthCheck" as the target dir and fails. Leaving
+          # it on avoids that bug.
+          enable_health_check: "yes"
+          # Do NOT delete the existing WordPress files — they keep the health
+          # check passing. Our .htaccess makes index.html the homepage, so the
+          # static site is what visitors see; WordPress just sits unused beneath.
+          cleanup_deleted_files: "no"
