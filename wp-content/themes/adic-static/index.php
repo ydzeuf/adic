@@ -7,6 +7,13 @@
  * the WordPress root) and stop. Real files like /products.html, /contact.html
  * and /assets/... are served directly by the web server and never reach here.
  */
+// Ask the CDN / browsers not to serve a stale copy of the homepage, so updates
+// (and the switch away from the old WordPress page) show up everywhere quickly.
+if ( function_exists( 'nocache_headers' ) ) {
+    nocache_headers();
+}
+header( 'Cache-Control: no-cache, max-age=0, must-revalidate' );
+
 $home = ABSPATH . 'index.html';
 if ( is_readable( $home ) ) {
     readfile( $home );
