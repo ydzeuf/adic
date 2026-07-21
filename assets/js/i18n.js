@@ -26,6 +26,17 @@ const ADIC_I18N = {
     "nav_contact": "تواصل معنا",
     "nav_cta": "اطلب عرض سعر",
 
+    /* official store */
+    "store_nav": "المتجر",
+    "store_shop": "تسوّق أونلاين",
+    "store_official": "المتجر الرسمي",
+    "store_visit": "زيارة المتجر الرسمي",
+    "store_band_ey": "التسوّق الإلكتروني",
+    "store_band_title": "تسوّق منتجاتنا من المتجر الرسمي",
+    "store_band_sub": "اطلب منتجات ADIC مباشرةً عبر متجرنا الإلكتروني الرسمي — تصفّح، اطلب، واستلم بسهولة.",
+    "store_web_l": "المتجر الإلكتروني",
+    "store_newtab": "يفتح في نافذة جديدة",
+
     /* hero */
     "hero_badge": "صناعة سعودية موثوقة منذ 2016",
     "hero_title_1": "جودة عالية في",
@@ -223,6 +234,17 @@ const ADIC_I18N = {
     "nav_contact": "Contact",
     "nav_cta": "Request a Quote",
 
+    /* official store */
+    "store_nav": "Store",
+    "store_shop": "Shop Online",
+    "store_official": "Official Store",
+    "store_visit": "Visit Official Store",
+    "store_band_ey": "Online Shopping",
+    "store_band_title": "Shop Our Products on the Official Store",
+    "store_band_sub": "Order ADIC products directly from our official online store — browse, order and receive with ease.",
+    "store_web_l": "Online Store",
+    "store_newtab": "opens in a new tab",
+
     "hero_badge": "Trusted Saudi Manufacturer since 2016",
     "hero_title_1": "High-Quality",
     "hero_title_hi": "Tissue Products",
@@ -395,6 +417,8 @@ const ADIC_CONTACT = {
   email: "info@adic.sa",
   website: "www.adic.sa",
   websiteUrl: "https://www.adic.sa",
+  store: "store-adic.com",
+  storeUrl: "https://www.store-adic.com",
   mapQuery: "Al Sulay, Al Mishal, Riyadh, Saudi Arabia",
 };
 

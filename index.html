@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=4">
+<link rel="stylesheet" href="assets/css/styles.css?v=6">
 </head>
 <body>
 <a href="#main" class="skip-link" data-i18n="skip">تخطٍ إلى المحتوى</a>
@@ -30,6 +30,10 @@
       <a href="index.html#capabilities" data-i18n="nav_capabilities">قدراتنا</a>
       <a href="index.html#network" data-i18n="nav_network">شبكة التوزيع</a>
       <a href="contact.html" data-i18n="nav_contact">تواصل معنا</a>
+      <a href="https://www.store-adic.com" target="_blank" rel="noopener" class="nav-store" data-contact="store">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10.5h16V9"/><path d="M9.5 19.5V14h5v5.5"/><path d="M3 9h18"/></svg>
+        <span data-i18n="store_nav">المتجر</span>
+      </a>
     </nav>
 
     <div class="nav-tools">
@@ -252,6 +256,31 @@
   </div>
 </section>
 
+<!-- ======================= OFFICIAL STORE ====================== -->
+<section class="section">
+  <div class="container">
+    <div class="store-band" data-reveal="scale">
+      <div class="store-band__inner">
+        <div class="store-band__ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10.5h16V9"/><path d="M9.5 19.5V14h5v5.5"/><path d="M3 9h18"/></svg>
+        </div>
+        <div class="store-band__txt">
+          <span class="store-band__ey" data-i18n="store_band_ey">التسوّق الإلكتروني</span>
+          <h2 data-i18n="store_band_title">تسوّق منتجاتنا من المتجر الرسمي</h2>
+          <p data-i18n="store_band_sub">اطلب منتجات ADIC مباشرةً عبر متجرنا الإلكتروني الرسمي — تصفّح، اطلب، واستلم بسهولة.</p>
+        </div>
+        <div class="store-band__cta">
+          <a href="https://www.store-adic.com" target="_blank" rel="noopener" class="btn btn--store btn--lg" data-contact="store">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10.5h16V9"/><path d="M9.5 19.5V14h5v5.5"/><path d="M3 9h18"/></svg>
+            <span data-i18n="store_visit">زيارة المتجر الرسمي</span>
+            <span class="ext-cue" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============================== WHY =========================== -->
 <section class="section">
   <div class="container why-wrap">
@@ -341,6 +370,7 @@
           <li><a href="products.html" data-i18n="nav_products">المنتجات</a></li>
           <li><a href="index.html#network" data-i18n="nav_network">شبكة التوزيع</a></li>
           <li><a href="contact.html" data-i18n="nav_contact">تواصل معنا</a></li>
+          <li><a href="https://www.store-adic.com" target="_blank" rel="noopener" class="foot-store" data-contact="store"><span data-i18n="store_official">المتجر الرسمي</span> <span class="ext-cue" aria-hidden="true">↗</span></a></li>
         </ul>
       </div>
 
@@ -392,15 +422,24 @@
           <span data-i18n="modal_email">استفسر عبر البريد</span>
         </a>
       </div>
+      <a href="https://www.store-adic.com" target="_blank" rel="noopener" class="btn btn--store btn--block modal__store" data-contact="store">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10.5h16V9"/><path d="M9.5 19.5V14h5v5.5"/><path d="M3 9h18"/></svg>
+        <span data-i18n="store_visit">زيارة المتجر الرسمي</span>
+        <span class="ext-cue" aria-hidden="true">↗</span>
+      </a>
     </div>
   </div>
 </div>
 
 <button class="to-top" id="toTop" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<a class="store-fab" href="https://www.store-adic.com" target="_blank" rel="noopener" data-contact="store" data-i18n-attr="aria-label" data-i18n="store_official" aria-label="المتجر الرسمي">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10.5h16V9"/><path d="M9.5 19.5V14h5v5.5"/><path d="M3 9h18"/></svg>
+  <span class="store-fab__label" data-i18n="store_shop" aria-hidden="true">تسوّق أونلاين</span>
+</a>
 <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.1 1.2Z"/></svg></a>
 
-<script src="assets/js/data.js"></script>
-<script src="assets/js/i18n.js"></script>
-<script src="assets/js/main.js"></script>
+<script src="assets/js/data.js?v=5"></script>
+<script src="assets/js/i18n.js?v=5"></script>
+<script src="assets/js/main.js?v=5"></script>
 </body>
 </html>

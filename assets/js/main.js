@@ -72,11 +72,12 @@
       wa: `https://wa.me/${C.whatsappRaw}?text=${waMsg}`,
       email: "mailto:" + C.email,
       web: C.websiteUrl,
+      store: C.storeUrl,
     };
     $$("[data-contact]").forEach((a) => {
       const k = a.getAttribute("data-contact");
       if (map[k]) a.setAttribute("href", map[k]);
-      if (k === "wa" || k === "web") {
+      if (k === "wa" || k === "web" || k === "store") {
         a.setAttribute("target", "_blank");
         a.setAttribute("rel", "noopener");
       }

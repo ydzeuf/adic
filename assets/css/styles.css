@@ -766,3 +766,87 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
     transition-duration:.001ms!important;scroll-behavior:auto!important}
   [data-reveal]{opacity:1!important;transform:none!important}
 }
+
+/* =====================================================================
+   OFFICIAL STORE — buttons, nav link, promo band, floating FAB
+   (store-adic.com) · on-theme (navy + gold) · bilingual · responsive
+   ===================================================================== */
+
+/* store button variant — premium gold, distinct storefront icon */
+.btn--store{--bg:linear-gradient(120deg,#b9832a,#ecc978 55%,#d4a23a);--fg:#2c1f04}
+.btn--store svg{width:1.18em;height:1.18em}
+.ext-cue{font-size:.85em;opacity:.75;margin-inline-start:-.15rem}
+
+/* ---- nav link (desktop bar + mobile menu) ---- */
+.nav-store{display:inline-flex;align-items:center;gap:.45rem}
+.nav-store svg{width:1.08em;height:1.08em}
+.nav-links a.nav-store{color:var(--gold-200)}
+.nav-links a.nav-store::after{background:var(--gold)}
+.nav-links a.nav-store:hover{color:var(--gold)}
+.scrolled .nav-links a.nav-store{color:#a9791b}
+.scrolled .nav-links a.nav-store:hover{color:#a9791b}
+@media (max-width:900px){
+  /* in the full-screen mobile menu, render it as a clear gold pill.
+     `.header` prefix raises specificity (0,3,1) so the dark text wins
+     over the desktop gold-200 rule and the scrolled rule. */
+  .header .nav-links a.nav-store{
+    color:#3a2a06;background:var(--grad-gold);
+    box-shadow:0 10px 24px rgba(212,162,58,.34);margin-top:.6rem;
+  }
+  .header .nav-links a.nav-store:hover,
+  .header .nav-links a.nav-store:focus-visible{color:#3a2a06}
+}
+
+/* ---- footer quick link ---- */
+.foot-links a.foot-store{color:var(--gold-200);font-weight:700}
+.foot-links a.foot-store:hover{color:#fff}
+.foot-links a.foot-store::before{content:"🛍"} /* replaces the › marker */
+[dir="rtl"] .foot-links a.foot-store::before{content:"🛍"}
+
+/* ---- page-hero store button (products / contact) ---- */
+.page-hero__cta{margin-top:1.6rem;display:flex;justify-content:center}
+
+/* ---- creative store promo band (home) ---- */
+.store-band{position:relative;border-radius:var(--r-xl);overflow:hidden;isolation:isolate;
+  padding:clamp(2.2rem,4.5vw,3.4rem);background:var(--grad-navy-deep);color:#fff;box-shadow:var(--sh-3)}
+.store-band::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.55;
+  background:radial-gradient(45% 95% at 100% 0,rgba(212,162,58,.55),transparent 60%),
+            radial-gradient(45% 95% at 0 100%,rgba(63,147,221,.45),transparent 60%)}
+.store-band::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.10;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px);
+  background-size:52px 52px;mask-image:radial-gradient(circle at 80% 20%,#000,transparent 72%)}
+.store-band__inner{display:flex;align-items:center;justify-content:space-between;gap:1.4rem 2rem;
+  flex-wrap:wrap;position:relative}
+.store-band__ico{flex-shrink:0;width:66px;height:66px;border-radius:18px;display:grid;place-items:center;
+  background:rgba(212,162,58,.16);border:1px solid rgba(241,215,155,.32);color:var(--gold-200)}
+.store-band__ico svg{width:34px;height:34px}
+.store-band__txt{flex:1;min-width:240px}
+.store-band__ey{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-head);font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;font-size:.72rem;color:var(--gold-200);margin-bottom:.5rem}
+.store-band__ey::before{content:"";width:18px;height:2px;background:var(--gold);border-radius:2px}
+.store-band h2{color:#fff;font-size:clamp(1.5rem,3.2vw,2.2rem);letter-spacing:-.01em}
+.store-band p{color:rgba(255,255,255,.82);margin-top:.5rem;max-width:60ch}
+.store-band__cta{flex-shrink:0}
+@media (max-width:680px){
+  .store-band__inner{flex-direction:column;text-align:center}
+  .store-band__ey{justify-content:center}
+  .store-band__txt{min-width:0}
+  .store-band__cta .btn{width:100%}
+}
+
+/* ---- floating store FAB (stacked above the WhatsApp float) ---- */
+.store-fab{position:fixed;inset-block-end:calc(1.4rem + 56px + .85rem);inset-inline-start:1.4rem;z-index:90;
+  width:56px;height:56px;border-radius:50%;background:var(--grad-gold);color:#3a2a06;display:grid;place-items:center;
+  box-shadow:0 12px 30px rgba(212,162,58,.42);transition:transform .35s var(--ease)}
+.store-fab:hover{transform:scale(1.08) rotate(-6deg)}
+.store-fab svg{width:28px;height:28px}
+.store-fab__label{position:absolute;inset-inline-start:calc(100% + .6rem);white-space:nowrap;
+  background:var(--navy);color:#fff;font-family:var(--font-head);font-weight:700;font-size:.82rem;
+  padding:.42rem .85rem;border-radius:var(--r-pill);box-shadow:var(--sh-2);
+  opacity:0;transform:translateY(4px);pointer-events:none;transition:opacity .3s,transform .3s}
+.store-fab:hover .store-fab__label{opacity:1;transform:none}
+@media (max-width:900px){.store-fab__label{display:none}}
+
+/* ---- store button inside product modal ---- */
+.modal__store{margin-top:.7rem}
