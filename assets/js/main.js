@@ -70,6 +70,7 @@
     const map = {
       tel: "tel:" + C.phone,
       sales: "tel:" + C.sales,
+      mgmt: "tel:" + C.management,
       wa: `https://wa.me/${C.whatsappRaw}?text=${waMsg}`,
       email: "mailto:" + C.email,
       web: C.websiteUrl,
