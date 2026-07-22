@@ -1,5 +1,5 @@
 /* =====================================================================
-   ADIC – Aqd Darin Industrial Co.  |  Design System & Styles
+   ADIC – Aqd Dareen Industrial Co.  |  Design System & Styles
    Palette derived from the official logo  (navy #013068)
    Bilingual (RTL/LTR) • Responsive • Animated
    ===================================================================== */
@@ -110,7 +110,9 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
   font-family:var(--font-head);font-weight:700;font-size:.98rem;
   padding:.95rem 1.7rem;border-radius:var(--r-pill);
   background:var(--bg);color:var(--fg);position:relative;overflow:hidden;
-  transition:transform .35s var(--ease-out),box-shadow .35s,filter .35s;
+  white-space:nowrap;
+  transition:transform .35s var(--ease-out),box-shadow .35s,filter .35s,
+             background-color .45s var(--ease),color .45s var(--ease);
   box-shadow:var(--sh-2);will-change:transform;isolation:isolate;
 }
 .btn svg{width:1.1em;height:1.1em;transition:transform .35s var(--ease)}
@@ -188,6 +190,12 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 .scrolled .lang-btn:hover{color:#3a2a06}
 .nav-tools .btn{padding:.6rem 1.2rem;font-size:.9rem}
 .nav-cta-top{display:inline-flex}
+/* Request-a-quote pill: gold while the bar is transparent over the navy hero,
+   then melts into navy once the header turns white on scroll */
+.header .nav-cta-top{--bg:#d4a23a;--fg:#3a2a06}
+.header .nav-cta-top:hover{--bg:#e7be63}
+.header.scrolled .nav-cta-top{--bg:var(--navy);--fg:#fff}
+.header.scrolled .nav-cta-top:hover{--bg:var(--navy-600)}
 
 /* burger */
 .burger{display:none;width:46px;height:46px;border-radius:12px;position:relative;flex-direction:column;
@@ -249,7 +257,7 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 .hero__cta{display:flex;flex-wrap:wrap;gap:1rem}
 
 /* hero visual / slideshow */
-.hero__visual{position:relative;height:clamp(340px,46vw,520px)}
+.hero__visual{position:relative;height:clamp(380px,48vw,560px)}
 .hero-card{
   position:absolute;inset:0;border-radius:var(--r-xl);overflow:hidden;
   background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05));
@@ -258,12 +266,20 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 }
 .slides{position:absolute;inset:0}
 .slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:1rem;opacity:0;transform:scale(1.06);transition:opacity .9s var(--ease),transform .9s var(--ease);padding:2rem}
+  gap:.9rem;opacity:0;transform:scale(1.06);transition:opacity .9s var(--ease),transform .9s var(--ease);
+  padding:1.4rem 1.4rem 2.6rem}
 .slide.active{opacity:1;transform:scale(1)}
-.slide img{height:62%;width:auto;object-fit:contain;filter:drop-shadow(0 24px 35px rgba(0,0,0,.4))}
+/* product photo sits on a clean white "studio" card — bigger & pro */
+.slide__media{position:relative;width:100%;flex:1;min-height:0;
+  background:radial-gradient(90% 90% at 50% 24%,#ffffff 62%,#e9f1fb);
+  border-radius:calc(var(--r-lg) - 4px);
+  box-shadow:0 18px 44px rgba(0,10,26,.38),inset 0 0 0 1px rgba(1,48,104,.05)}
+.slide__media img{position:absolute;inset:1.1rem;width:calc(100% - 2.2rem);height:calc(100% - 2.2rem);
+  object-fit:contain;mix-blend-mode:multiply;transform:scale(1);transition:transform 6s var(--ease)}
+.slide.active .slide__media img{transform:scale(1.045)}
 .slide__cap{text-align:center}
-.slide__cap h3{color:#fff;font-size:1.5rem;margin-bottom:.2rem}
-.slide__cap p{color:var(--gold-200);font-weight:600;font-size:.95rem}
+.slide__cap h3{color:#fff;font-size:1.4rem;margin-bottom:.15rem}
+.slide__cap p{color:var(--gold-200);font-weight:600;font-size:.92rem}
 .slide-dots{position:absolute;inset-block-end:1.1rem;inset-inline:0;display:flex;justify-content:center;gap:.5rem;z-index:3}
 .slide-dots button{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.4);transition:.3s}
 .slide-dots button.active{background:var(--gold);width:26px;border-radius:6px}
@@ -312,6 +328,8 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
   background:rgba(24,100,171,.1);color:var(--blue);margin-bottom:1rem}
 .vm-card.gold .vm-ico{background:rgba(212,162,58,.14);color:#a9791b}
 .vm-card.gold::before{background:var(--grad-gold)}
+.vm-card.growth .vm-ico{background:rgba(31,122,68,.12);color:var(--green)}
+.vm-card.growth::before{background:linear-gradient(180deg,var(--green),#43b877)}
 .vm-card .vm-ico svg{width:28px;height:28px}
 .vm-card h3{font-size:1.3rem;margin-bottom:.5rem}
 .vm-card p{color:var(--muted);font-size:.97rem}
@@ -337,13 +355,23 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 @keyframes marquee{to{transform:translateX(calc(-50% - .6rem))}}
 /* Note: do NOT use animation-direction:reverse for RTL — iOS Safari won't
    animate it, leaving the Arabic marquee frozen. Same leftward scroll for both. */
+/* brand chips: pure logo cards with lift + sheen on hover */
 .brand-chip{
-  display:flex;align-items:center;gap:.8rem;padding:1rem 1.8rem;border-radius:var(--r-pill);
-  background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-1);white-space:nowrap}
-.brand-chip .bc-dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;
-  font-family:var(--font-head);font-weight:800;font-size:.9rem;background:var(--grad-navy)}
-.brand-chip b{font-family:var(--font-head);font-size:1.05rem;color:var(--navy)}
-.brand-chip span{color:var(--muted);font-size:.85rem}
+  position:relative;display:grid;place-items:center;height:118px;min-width:200px;
+  padding:1.1rem 2.2rem;border-radius:var(--r-lg);overflow:hidden;isolation:isolate;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-1);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .45s}
+.brand-chip::before{content:"";position:absolute;inset-inline:0;inset-block-start:0;height:3px;
+  background:var(--grad-gold);opacity:0;transition:opacity .4s}
+.brand-chip::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);
+  transform:translateX(-130%);transition:transform .7s var(--ease)}
+.brand-chip:hover{transform:translateY(-8px);box-shadow:var(--sh-3);border-color:rgba(212,162,58,.45)}
+.brand-chip:hover::before{opacity:1}
+.brand-chip:hover::after{transform:translateX(130%)}
+.brand-chip img{height:62px;width:auto;max-width:180px;object-fit:contain;
+  transition:transform .45s var(--ease)}
+.brand-chip:hover img{transform:scale(1.08)}
 
 /* =========================== CATEGORIES ========================== */
 .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem}
@@ -521,7 +549,11 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 .footer__top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:2.4rem;padding-bottom:2.6rem}
 .footer h4{color:#fff;font-size:1.05rem;margin-bottom:1.1rem;position:relative;padding-bottom:.6rem}
 .footer h4::after{content:"";position:absolute;inset-block-end:0;inset-inline-start:0;width:34px;height:2px;background:var(--gold)}
-.footer__brand img{height:46px;width:auto;margin-bottom:1.1rem}
+.footer__brand img{height:44px;width:auto;margin-bottom:1.1rem}
+/* direction-aware wide logo (ADIC side follows reading direction) */
+.foot-logo-rtl{display:none}
+[dir="rtl"] .foot-logo-ltr{display:none}
+[dir="rtl"] .foot-logo-rtl{display:block}
 .footer__brand p{font-size:.92rem;line-height:1.8;max-width:42ch}
 .footer__brand .serve{margin-top:1rem;font-size:.85rem;color:var(--gold-200)}
 .foot-links li,.foot-contact li{margin-bottom:.7rem}
@@ -743,7 +775,11 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
   .values-grid{grid-template-columns:repeat(2,1fr)}
   .cat-grid{grid-template-columns:1fr}
   .cities{grid-template-columns:repeat(2,1fr)}
-  .products-grid{grid-template-columns:repeat(2,1fr)}
+  /* one product per row on phones — cards keep proper proportions */
+  .products-grid{grid-template-columns:1fr;gap:1.2rem}
+  .pcard{max-width:440px;margin-inline:auto;width:100%}
+  .pcard__media{aspect-ratio:4/3}
+  .pcard__btn{padding:.85rem 1rem;font-size:.95rem}
   .form-row{grid-template-columns:1fr}
   .contact-grid{grid-template-columns:1fr}
   .footer__top{grid-template-columns:1fr}
@@ -753,12 +789,13 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
   .modal__actions{grid-template-columns:1fr}
 }
 @media (max-width:430px){
-  .products-grid{grid-template-columns:1fr 1fr;gap:1rem}
-  .pcard__body{padding:.9rem}
   .filter-tabs button{padding:.5rem .8rem;font-size:.82rem}
   .search-box input{min-width:0;width:100%}
   .controls-right{width:100%}
   .search-box{flex:1}
+  /* keep every button label on a single line on narrow phones */
+  .btn{font-size:.9rem;padding:.85rem 1.35rem}
+  .btn--lg{font-size:.95rem;padding:1rem 1.5rem}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -775,7 +812,6 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 /* store button variant — premium gold, distinct storefront icon */
 .btn--store{--bg:linear-gradient(120deg,#b9832a,#ecc978 55%,#d4a23a);--fg:#2c1f04}
 .btn--store svg{width:1.18em;height:1.18em}
-.ext-cue{font-size:.85em;opacity:.75;margin-inline-start:-.15rem}
 
 /* ---- nav link (desktop bar + mobile menu) ---- */
 .nav-store{display:inline-flex;align-items:center;gap:.45rem}

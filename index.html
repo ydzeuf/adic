@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=6">
+<link rel="stylesheet" href="assets/css/styles.css?v=7">
 </head>
 <body>
 <a href="#main" class="skip-link" data-i18n="skip">تخطٍ إلى المحتوى</a>
@@ -19,8 +19,8 @@
 <header class="header" id="header">
   <div class="container nav">
     <a href="index.html" class="brand" aria-label="ADIC">
-      <img class="brand-logo-light" src="assets/img/logo-white.png" alt="ADIC — Aqd Darin Industrial Co.">
-      <img class="brand-logo-dark" src="assets/img/logo.png" alt="ADIC — Aqd Darin Industrial Co.">
+      <img class="brand-logo-light" src="assets/img/logos/adic-stacked-light.png" alt="ADIC — Aqd Dareen Industrial Co.">
+      <img class="brand-logo-dark" src="assets/img/logos/adic-stacked.png" alt="ADIC — Aqd Dareen Industrial Co.">
     </a>
 
     <nav class="nav-links" id="navLinks" aria-label="primary">
@@ -85,15 +85,15 @@
       <div class="hero-card">
         <div class="slides" id="heroSlides">
           <div class="slide active">
-            <img src="assets/img/products/p02.png" alt="Facial tissue">
+            <div class="slide__media"><img src="assets/img/hero/slide-facial.jpg" alt="Facial tissue" fetchpriority="high"></div>
             <div class="slide__cap"><h3 data-i18n="hero_slide_1_t">مناديل الوجه</h3><p data-i18n="hero_slide_1_d">اقتصادية • تجارية • فاخرة</p></div>
           </div>
           <div class="slide">
-            <img src="assets/img/products/p11.png" alt="Maxi roll">
+            <div class="slide__media"><img src="assets/img/hero/slide-maxi.jpg" alt="Maxi roll" loading="lazy"></div>
             <div class="slide__cap"><h3 data-i18n="hero_slide_2_t">ماكس رول</h3><p data-i18n="hero_slide_2_d">للاستخدام التجاري والصناعي</p></div>
           </div>
           <div class="slide">
-            <img src="assets/img/products/p26.png" alt="Private label">
+            <div class="slide__media"><img src="assets/img/hero/slide-private.jpg" alt="Private label" loading="lazy"></div>
             <div class="slide__cap"><h3 data-i18n="hero_slide_3_t">العلامة الخاصة</h3><p data-i18n="hero_slide_3_d">Private Label لعلامتك التجارية</p></div>
           </div>
         </div>
@@ -145,6 +145,11 @@
         <div class="vm-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
         <h3 data-i18n="about_mission_t">الرسالة</h3>
         <p data-i18n="about_mission_d">تقديم منتجات ورقية موثوقة وعالية الجودة…</p>
+      </div>
+      <div class="vm-card growth" data-reveal="right" data-delay="3">
+        <div class="vm-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg></div>
+        <h3 data-i18n="about_growth_t">النمو المستقبلي</h3>
+        <p data-i18n="about_growth_d">نواصل توسيع قدراتنا التصنيعية وتعزيز حضورنا في السوق وتطوير حلول ومنتجات ورقية مبتكرة.</p>
       </div>
     </div>
   </div>
@@ -273,7 +278,7 @@
           <a href="https://www.store-adic.com" target="_blank" rel="noopener" class="btn btn--store btn--lg" data-contact="store">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10.5h16V9"/><path d="M9.5 19.5V14h5v5.5"/><path d="M3 9h18"/></svg>
             <span data-i18n="store_visit">زيارة المتجر الرسمي</span>
-            <span class="ext-cue" aria-hidden="true">↗</span>
+           
           </a>
         </div>
       </div>
@@ -356,7 +361,8 @@
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <img src="assets/img/logo-white.png" alt="ADIC">
+        <img class="foot-logo-ltr" src="assets/img/logos/adic-wide-light.png" alt="ADIC — Aqd Dareen Industrial Co.">
+        <img class="foot-logo-rtl" src="assets/img/logos/adic-wide-rtl-light.png" alt="ADIC — Aqd Dareen Industrial Co.">
         <p data-i18n="foot_about">شركة سعودية متخصصة في تصنيع وتوريد منتجات الورق الصحي…</p>
         <p class="serve" data-i18n="foot_serve">نخدم في: الرياض • جدة • القصيم • المدينة المنورة • الدمام • وجميع مدن المملكة</p>
         <div class="footer__private"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6Z"/></svg><span data-i18n="foot_private">يوجد لدينا طباعة خاصة — Private Label</span></div>
@@ -370,7 +376,7 @@
           <li><a href="products.html" data-i18n="nav_products">المنتجات</a></li>
           <li><a href="index.html#network" data-i18n="nav_network">شبكة التوزيع</a></li>
           <li><a href="contact.html" data-i18n="nav_contact">تواصل معنا</a></li>
-          <li><a href="https://www.store-adic.com" target="_blank" rel="noopener" class="foot-store" data-contact="store"><span data-i18n="store_official">المتجر الرسمي</span> <span class="ext-cue" aria-hidden="true">↗</span></a></li>
+          <li><a href="https://www.store-adic.com" target="_blank" rel="noopener" class="foot-store" data-contact="store"><span data-i18n="store_official">المتجر الرسمي</span></a></li>
         </ul>
       </div>
 
@@ -425,7 +431,7 @@
       <a href="https://www.store-adic.com" target="_blank" rel="noopener" class="btn btn--store btn--block modal__store" data-contact="store">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 9l1.5-4.5h15L21 9"/><path d="M4 9v10.5h16V9"/><path d="M9.5 19.5V14h5v5.5"/><path d="M3 9h18"/></svg>
         <span data-i18n="store_visit">زيارة المتجر الرسمي</span>
-        <span class="ext-cue" aria-hidden="true">↗</span>
+       
       </a>
     </div>
   </div>
@@ -438,8 +444,8 @@
 </a>
 <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.3.5-.3.3c-.2.2-.3.4-.1.7.2.3.9 1.4 1.9 2.3 1.3 1.1 2.3 1.5 2.6 1.6.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.1 1.2Z"/></svg></a>
 
-<script src="assets/js/data.js?v=5"></script>
-<script src="assets/js/i18n.js?v=5"></script>
-<script src="assets/js/main.js?v=5"></script>
+<script src="assets/js/data.js?v=7"></script>
+<script src="assets/js/i18n.js?v=7"></script>
+<script src="assets/js/main.js?v=7"></script>
 </body>
 </html>

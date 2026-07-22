@@ -201,16 +201,20 @@
   }
 
   /* --------------------------- brands ---------------------------- */
+  // the six official brand logos shown in the "Our Brands" marquee
+  const BRAND_LOGOS = [
+    { img: "adic",      alt: "ADIC — Aqd Dareen Industrial Co." },
+    { img: "finex",     alt: "Finex — فاينكس" },
+    { img: "dareen",    alt: "Dareen — دارين" },
+    { img: "lusail",    alt: "Lusail — لوسيل" },
+    { img: "hyper",     alt: "Hyper — هايبر" },
+    { img: "highclass", alt: "High Class — هاي كلاس" },
+  ];
   function renderBrands() {
     const track = $("#brandsTrack");
     if (track) {
-      const set = Object.keys(BRANDS)
-        .map((k) => {
-          const b = BRANDS[k];
-          const initial = b.en.charAt(0);
-          return `<div class="brand-chip"><span class="bc-dot">${initial}</span>
-                  <div><b>${b[lang]}</b><br><span>${lang === "ar" ? b.en : b.ar}</span></div></div>`;
-        })
+      const set = BRAND_LOGOS
+        .map((b) => `<div class="brand-chip"><img src="assets/img/brands/${b.img}.png" alt="${b.alt}" loading="lazy"></div>`)
         .join("");
       track.innerHTML = set + set; // duplicate for seamless marquee
     }

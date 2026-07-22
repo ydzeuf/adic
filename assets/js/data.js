@@ -1,11 +1,11 @@
 /* =====================================================================
-   ADIC – Aqd Darin Industrial Co.
+   ADIC – Aqd Dareen Industrial Co.
    Product catalogue data (bilingual AR / EN)
    Extracted from the official product sheets (products_1..4)
    ===================================================================== */
 
 const ADIC_BRANDS = {
-  aqddarin: { ar: "عقد دارين", en: "Aqd Darin" },
+  aqddareen: { ar: "عقد دارين", en: "Aqd Dareen" },
   finex:    { ar: "فاينكس",    en: "Finex" },
   lucille:  { ar: "لوسيل",     en: "Lucille" },
   hyper:    { ar: "هايبر",     en: "Hyper" },
@@ -97,14 +97,14 @@ const ADIC_PRODUCTS = [
             en:["Model 350","Pack 6 × 1"]},
     tags:["value","absorb"] },
 
-  { id:"p13", img:"p13", category:"maxi", pack:"roll", brand:"aqddarin",
-    name:{ar:"ماكس رول عقد دارين",en:"Aqd Darin Maxi Roll"},
+  { id:"p13", img:"p13", category:"maxi", pack:"roll", brand:"aqddareen",
+    name:{ar:"ماكس رول عقد دارين",en:"Aqd Dareen Maxi Roll"},
     specs:{ar:["شد 6 × 1"],
             en:["Pack 6 × 1"]},
     tags:["economy","absorb"] },
 
-  { id:"p14", img:"p14", category:"maxi", pack:"roll", brand:"aqddarin",
-    name:{ar:"ماكس رول عقد دارين",en:"Aqd Darin Maxi Roll"},
+  { id:"p14", img:"p14", category:"maxi", pack:"roll", brand:"aqddareen",
+    name:{ar:"ماكس رول عقد دارين",en:"Aqd Dareen Maxi Roll"},
     specs:{ar:["شنطة 2 × 3"],
             en:["Bag 2 × 3"]},
     tags:["economy","absorb"] },
@@ -116,8 +116,8 @@ const ADIC_PRODUCTS = [
     tags:["value","absorb"] },
 
   /* ---------- Sheet 3 : Maxi Roll ---------- */
-  { id:"p16", img:"p16", category:"maxi", pack:"roll", brand:"aqddarin",
-    name:{ar:"ماكس رول عقد دارين",en:"Aqd Darin Maxi Roll"},
+  { id:"p16", img:"p16", category:"maxi", pack:"roll", brand:"aqddareen",
+    name:{ar:"ماكس رول عقد دارين",en:"Aqd Dareen Maxi Roll"},
     specs:{ar:["300 متر","شد 6 × 1"],
             en:["300 meters","Pack 6 × 1"]},
     tags:["value","absorb"] },
@@ -134,26 +134,26 @@ const ADIC_PRODUCTS = [
             en:["180 m compressed","Pack 12 × 1"]},
     tags:["value","absorb"] },
 
-  { id:"p19", img:"p19", category:"maxi", pack:"roll", brand:"aqddarin",
-    name:{ar:"ماكس رول عقد دارين الاقتصادي",en:"Aqd Darin Economy Maxi Roll"},
+  { id:"p19", img:"p19", category:"maxi", pack:"roll", brand:"aqddareen",
+    name:{ar:"ماكس رول عقد دارين الاقتصادي",en:"Aqd Dareen Economy Maxi Roll"},
     specs:{ar:["العبوة الاقتصادية","شديد الامتصاص"],
             en:["Economy pack","Highly absorbent"]},
     tags:["economy","absorb"] },
 
-  { id:"p20", img:"p20", category:"maxi", pack:"roll", brand:"aqddarin",
-    name:{ar:"ماكس رول عقد دارين",en:"Aqd Darin Maxi Roll"},
+  { id:"p20", img:"p20", category:"maxi", pack:"roll", brand:"aqddareen",
+    name:{ar:"ماكس رول عقد دارين",en:"Aqd Dareen Maxi Roll"},
     specs:{ar:["150 متر","شد 6 × 1"],
             en:["150 meters","Pack 6 × 1"]},
     tags:["economy","absorb"] },
 
-  { id:"p21", img:"p21", category:"maxi", pack:"roll", brand:"aqddarin",
-    name:{ar:"ماكس رول عقد دارين",en:"Aqd Darin Maxi Roll"},
+  { id:"p21", img:"p21", category:"maxi", pack:"roll", brand:"aqddareen",
+    name:{ar:"ماكس رول عقد دارين",en:"Aqd Dareen Maxi Roll"},
     specs:{ar:["350 متر","شد 6 × 1"],
             en:["350 meters","Pack 6 × 1"]},
     tags:["value","absorb"] },
 
-  { id:"p22", img:"p22", category:"maxi", pack:"roll", brand:"aqddarin",
-    name:{ar:"ماكس رول عقد دارين",en:"Aqd Darin Maxi Roll"},
+  { id:"p22", img:"p22", category:"maxi", pack:"roll", brand:"aqddareen",
+    name:{ar:"ماكس رول عقد دارين",en:"Aqd Dareen Maxi Roll"},
     specs:{ar:["180 متر","شد 6 × 1"],
             en:["180 meters","Pack 6 × 1"]},
     tags:["economy","absorb"] },
@@ -177,8 +177,8 @@ const ADIC_PRODUCTS = [
             en:["90 two-ply tissues","Pack 6 × 6"]},
     tags:["premium"] },
 
-  { id:"p26", img:"p26", category:"facial", pack:"box", brand:"aqddarin",
-    name:{ar:"مناديل دارين كلاسيك",en:"Darin Classic Tissues"},
+  { id:"p26", img:"p26", category:"facial", pack:"box", brand:"aqddareen",
+    name:{ar:"مناديل دارين كلاسيك",en:"Dareen Classic Tissues"},
     specs:{ar:["100 منديل مزدوج","شد 6 × 6"],
             en:["100 two-ply tissues","Pack 6 × 6"]},
     tags:["premium"] },
@@ -189,14 +189,14 @@ const ADIC_PRODUCTS = [
             en:["50 two-ply tissues","Pack of 36"]},
     tags:["premium"] },
 
-  { id:"p28", img:"p28", category:"facial", pack:"box", brand:"aqddarin",
-    name:{ar:"مناديل دارين",en:"Darin Tissues"},
+  { id:"p28", img:"p28", category:"facial", pack:"box", brand:"aqddareen",
+    name:{ar:"مناديل دارين",en:"Dareen Tissues"},
     specs:{ar:["65 منديل مزدوج","شد 6 × 6"],
             en:["65 two-ply tissues","Pack 6 × 6"]},
     tags:["premium"] },
 
-  { id:"p29", img:"p29", category:"facial", pack:"soft", brand:"aqddarin",
-    name:{ar:"مناديل عقد دارين",en:"Aqd Darin Tissues"},
+  { id:"p29", img:"p29", category:"facial", pack:"soft", brand:"aqddareen",
+    name:{ar:"مناديل عقد دارين",en:"Aqd Dareen Tissues"},
     specs:{ar:["200 منديل مزدوج","شد 10 حبة × 5 شنطة","العبوة الاقتصادية"],
             en:["200 two-ply tissues","Pack 10 × 5 bundles","Economy pack"]},
     tags:["economy"] },
