@@ -564,8 +564,8 @@ h1,h2,h3,h4{font-family:var(--font-head);line-height:1.18;font-weight:800;color:
 .foot-contact li{display:flex;gap:.7rem;align-items:flex-start;font-size:.92rem}
 .foot-contact svg{width:18px;height:18px;color:var(--gold-200);flex-shrink:0;margin-top:.25rem}
 .foot-contact a:hover{color:#fff}
-.foot-emblems{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;margin-top:.4rem}
-.foot-emblems img{height:58px;width:auto;opacity:.92;transition:transform .4s,opacity .4s}
+.foot-emblems{display:flex;align-items:center;gap:1rem;flex-wrap:nowrap;margin-top:.4rem}
+.foot-emblems img{height:46px;width:auto;max-width:100%;object-fit:contain;opacity:.92;transition:transform .4s,opacity .4s}
 .foot-emblems img:hover{transform:translateY(-4px) scale(1.04);opacity:1}
 .footer__private{font-size:.84rem;color:var(--gold-200);margin-top:1rem;display:flex;align-items:center;gap:.5rem}
 .footer__bottom{border-top:1px solid rgba(255,255,255,.12);padding:1.4rem 0;display:flex;
