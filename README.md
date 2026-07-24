@@ -1,7 +1,7 @@
-# ADIC — Aqd Darin Industrial Co. | Company Website
+# ADIC — Aqd Dareen Industrial Co. | Company Website
 
 A professional, bilingual (Arabic / English), animated and fully responsive
-website for **ADIC – Aqd Darin Industrial Co.** (شركة عقد دارين الصناعية).
+website for **ADIC – Aqd Dareen Industrial Co.** (شركة عقد دارين الصناعية).
 
 Built with plain **HTML + CSS + JavaScript** — no build step, no dependencies.
 
@@ -46,7 +46,7 @@ site/
 - 30 products across two categories: **Facial Tissue** and **Maxi Roll**.
 - Prices are intentionally **not shown** — every product has an **Inquire** action
   that opens WhatsApp / Email pre‑filled with the product name & specs.
-- Brands: عقد دارين (Aqd Darin), فاينكس (Finex), لوسيل (Lucille), هايبر (Hyper),
+- Brands: عقد دارين (Aqd Dareen), فاينكس (Finex), لوسيل (Lucille), هايبر (Hyper),
   هاي كلاس (High Class).
 
 ## ✉️ Contact

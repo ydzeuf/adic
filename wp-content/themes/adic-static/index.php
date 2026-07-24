@@ -20,4 +20,4 @@ if ( is_readable( $home ) ) {
     exit;
 }
 // Fallback if the static file is missing for some reason.
-echo 'ADIC - Aqd Darin Industrial Co.';
+echo 'ADIC - Aqd Dareen Industrial Co.';
