@@ -67,6 +67,15 @@ site/
 - Make sure the device is **online** the first time so the Google Fonts and the
   contact map load (both are loaded from the web).
 
+### 🔄 Updating the live site (avoiding a stale cache)
+The stylesheet and scripts are linked with a version tag, e.g. `styles.css?v=8`.
+**Whenever you change `styles.css`, `data.js`, `i18n.js` or `main.js`, bump that
+number** (`v=8` → `v=9`) in all three HTML pages, so visitors' browsers fetch the
+new files instead of a copy cached from a previous visit. `.htaccess` is also set
+up so HTML / CSS / JS **always revalidate**, which means updates normally appear
+without anyone having to clear their browser cache or use a private window.
+Images use unique filenames, so new images never need a version bump.
+
 ## ✨ Features
 - Animated hero with product slideshow, aurora background & floating shapes
 - Scroll‑reveal animations, animated counters, brand marquee

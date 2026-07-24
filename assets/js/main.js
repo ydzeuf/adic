@@ -331,6 +331,40 @@
     }
   }
 
+  /* --------------- full-width banner slideshow (auto) ------------ */
+  function initBanner() {
+    const wrap = $("#bannerSlides");
+    if (!wrap) return;
+    const slides = $$(".bslide", wrap);
+    if (slides.length < 2) return;
+    const dotsWrap = $("#bannerDots");
+    let idx = 0, timer;
+    const dots = slides.map((_, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = i === 0 ? "active" : "";
+      b.setAttribute("aria-label", "Banner " + (i + 1));
+      b.addEventListener("click", () => { go(i); reset(); });
+      if (dotsWrap) dotsWrap.appendChild(b);
+      return b;
+    });
+    function go(n) {
+      slides[idx].classList.remove("is-on");
+      dots[idx].classList.remove("active");
+      idx = (n + slides.length) % slides.length;
+      slides[idx].classList.add("is-on");
+      dots[idx].classList.add("active");
+    }
+    function next() { go(idx + 1); }
+    function reset() { clearInterval(timer); timer = setInterval(next, 5000); }
+    reset();
+    const band = $(".banner-band");
+    if (band) {
+      band.addEventListener("mouseenter", () => clearInterval(timer));
+      band.addEventListener("mouseleave", reset);
+    }
+  }
+
   /* ------------------------ scroll reveal ------------------------ */
   let revealObserver;
   function initReveal() {
@@ -506,6 +540,7 @@
 
     initHeader();
     initSlideshow();
+    initBanner();
     initProductsPage();
     wireModal();
     initContactForm();

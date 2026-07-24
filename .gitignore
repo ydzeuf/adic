@@ -11,3 +11,6 @@ id_rsa*
 id_ed25519*
 *_PRIVATE_KEY*
 *.ppk
+
+# local Claude Code tooling
+.claude/

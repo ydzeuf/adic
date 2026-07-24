@@ -9,13 +9,34 @@ DirectoryIndex index.html index.htm
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
-# Light caching for static assets
+# ---------------------------------------------------------------------------
+# Caching strategy
+# HTML, CSS and JS are always revalidated, so a new deploy shows up right away:
+# the browser sends a conditional request and gets a fast "304 Not Modified"
+# when nothing changed, or the fresh file when it did. No manual cache clearing.
+# CSS/JS also carry a ?v=N cache-buster in the page markup as a second safety
+# net — bump that number whenever you change those files.
+# Images are versioned by filename (new image = new name), so they cache a month.
+# ---------------------------------------------------------------------------
 <IfModule mod_expires.c>
   ExpiresActive On
+  ExpiresByType text/html  "access plus 0 seconds"
+  ExpiresByType text/css   "access plus 0 seconds"
+  ExpiresByType application/javascript "access plus 0 seconds"
   ExpiresByType image/png   "access plus 1 month"
   ExpiresByType image/jpeg  "access plus 1 month"
   ExpiresByType image/webp  "access plus 1 month"
-  ExpiresByType text/css    "access plus 7 days"
-  ExpiresByType application/javascript "access plus 7 days"
   ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/x-icon  "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Always check for a fresh copy of the page and its code
+  <FilesMatch "\.(html|htm|css|js)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  # Long-lived, filename-versioned images
+  <FilesMatch "\.(png|jpe?g|webp|svg|ico)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
 </IfModule>
