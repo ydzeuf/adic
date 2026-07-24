@@ -216,7 +216,7 @@ const ADIC_I18N = {
     "foot_contact": "تواصل معنا",
     "foot_brands": "علاماتنا",
     "foot_private": "يوجد لدينا طباعة خاصة — Private Label",
-    "foot_serve": "نخدم في: الرياض • جدة • القصيم • المدينة المنورة • الدمام • أبها • خميس مشيط • وجميع مدن المملكة",
+    "foot_serve": "نخدم: جميع مناطق المملكة",
     "foot_rights": "جميع الحقوق محفوظة.",
     "foot_made": "صُمّم بعناية لـ",
 
@@ -420,7 +420,7 @@ const ADIC_I18N = {
     "foot_contact": "Contact",
     "foot_brands": "Our Brands",
     "foot_private": "Private Label printing available",
-    "foot_serve": "Serving: Riyadh • Jeddah • Qassim • Madinah • Dammam • Abha • Khamis Mushait • and all cities of the Kingdom",
+    "foot_serve": "Serving: all regions of the Kingdom",
     "foot_rights": "All rights reserved.",
     "foot_made": "Crafted with care for",
 
