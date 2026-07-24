@@ -433,9 +433,9 @@ const ADIC_I18N = {
 const ADIC_CONTACT = {
   phone: "+966114555582",
   phoneDisplay: "+966 11 455 5582",
-  whatsapp: "+966539937299",
-  whatsappDisplay: "+966 53 993 7299",
-  whatsappRaw: "966539937299",
+  whatsapp: "+966539971399",
+  whatsappDisplay: "+966 53 997 1399",
+  whatsappRaw: "966539971399",
   sales: "+966539937299",
   salesDisplay: "+966 53 993 7299",
   management: "+966539971399",

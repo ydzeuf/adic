@@ -50,7 +50,7 @@ site/
   هاي كلاس (High Class).
 
 ## ✉️ Contact
-- Phone: +966 11 455 5582  ·  WhatsApp: +966 53 993 7299
+- Phone: +966 11 455 5582  ·  WhatsApp: +966 53 997 1399
 - Email: info@adic.sa  ·  Website: www.adic.sa
 - The contact form opens the visitor's email app addressed to `info@adic.sa`.
   > To receive submissions automatically instead, connect the form to a service
