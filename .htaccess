@@ -7,6 +7,18 @@ DirectoryIndex index.html index.htm
   RewriteEngine On
   RewriteCond %{HTTPS} off
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # -------------------------------------------------------------------------
+  # TEMPORARY "gate to the store" — the on-site products page is turned OFF for
+  # now (its images were extremely heavy and slowed the whole site). Every
+  # request to products.html is sent to the online store instead. 302 = a
+  # TEMPORARY redirect, so search engines keep products.html for when it returns.
+  # TO RESTORE THE PRODUCTS PAGE LATER:
+  #   1) delete the RewriteRule just below,
+  #   2) remove the redirect <script> in products.html's <head>,
+  #   3) un-comment the "PRODUCTS PREVIEW" section in index.html.
+  # -------------------------------------------------------------------------
+  RewriteRule ^products\.html$ https://www.store-adic.com/ [R=302,L]
 </IfModule>
 
 # ---------------------------------------------------------------------------
