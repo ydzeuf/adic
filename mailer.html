@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ADIC — Template Mailer (admin)</title>
+  <style>
+    :root { --navy:#013068; --blue:#1864ab; --gold:#d4a23a; --line:#e2e8f0; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: #f1f5f9;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #1e293b; display: grid; place-items: center; padding: 24px;
+    }
+    .card {
+      width: 100%; max-width: 560px; background: #fff; border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(1,48,104,.12); padding: 28px 26px;
+    }
+    h1 { margin: 0 0 4px; font-size: 1.25rem; color: var(--navy); }
+    .sub { margin: 0 0 22px; font-size: .85rem; color: #64748b; }
+    label { display: block; font-size: .8rem; font-weight: 600; margin: 14px 0 5px; }
+    input[type=text], input[type=email], input[type=password], input[type=file] {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--line);
+      border-radius: 8px; font-size: .95rem; background: #fff;
+    }
+    input:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
+    button {
+      margin-top: 22px; width: 100%; padding: 12px; border: 0; border-radius: 8px;
+      background: var(--navy); color: #fff; font-size: 1rem; font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: progress; }
+    #msg { margin-top: 16px; padding: 11px 13px; border-radius: 8px; font-size: .88rem; display: none; }
+    #msg.ok  { display: block; background: #dcfce7; color: #166534; }
+    #msg.err { display: block; background: #fee2e2; color: #991b1b; }
+    .note { margin-top: 18px; font-size: .74rem; color: #94a3b8; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Template Mailer</h1>
+    <p class="sub">Admin only — send an uploaded HTML template to one recipient.</p>
+
+    <form id="f">
+      <label for="token">Admin password</label>
+      <input type="password" id="token" name="token" autocomplete="off" required>
+
+      <label for="to">Send to</label>
+      <input type="email" id="to" name="to" placeholder="recipient@example.com" required>
+
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="subject" required>
+
+      <label for="fromname">From name (optional)</label>
+      <input type="text" id="fromname" name="fromname" placeholder="ADIC">
+
+      <label for="template">HTML template file (.html)</label>
+      <input type="file" id="template" name="template" accept=".html,.htm" required>
+
+      <button type="submit" id="send">Send email</button>
+    </form>
+
+    <div id="msg"></div>
+    <p class="note">
+      Sends via the server's PHP mail(). If the host blocks it you'll get an
+      error here and we'll need to switch to an SMTP account.
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById('f');
+    const btn  = document.getElementById('send');
+    const msg  = document.getElementById('msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.className = ''; msg.textContent = '';
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        const res = await fetch('mailer.php', { method: 'POST', body: new FormData(form) });
+        const data = await res.json().catch(() => ({ ok: false, error: 'Bad server response.' }));
+        if (data.ok) {
+          msg.className = 'ok';
+          msg.textContent = '✓ Sent to ' + data.to;
+          form.reset();
+        } else {
+          msg.className = 'err';
+          msg.textContent = '✗ ' + (data.error || 'Failed to send.');
+        }
+      } catch (err) {
+        msg.className = 'err';
+        msg.textContent = '✗ Network error: ' + err.message;
+      } finally {
+        btn.disabled = false; btn.textContent = 'Send email';
+      }
+    });
+  </script>
+</body>
+</html>
