@@ -1,37 +1,36 @@
 <?php
 /**
- * ADIC — private HTML-template mailer endpoint.
+ * ADIC — private HTML-template mailer endpoint (SMTP version).
  *
- * Receives a POST from mailer.html:
- *   - token   : the admin password (must match ADMIN_TOKEN below)
- *   - to       : recipient email address (typed each time)
- *   - subject  : email subject
- *   - fromname : (optional) display name for the sender
- *   - template : an uploaded .html file — its contents become the email body
+ * Sends an uploaded .html file as the body of an HTML email, through an
+ * AUTHENTICATED SMTP account (Gmail by default) — NOT PHP mail(), which this
+ * GoDaddy host accepts but does not actually deliver to Gmail/Outlook.
  *
- * Sends the HTML via PHP mail() and returns a small JSON result.
+ * Reuses the PHPMailer library that ships with WordPress (wp-includes), so
+ * nothing extra needs installing.
  *
- * SECURITY: this is an ADMIN-ONLY tool. Anyone with the token can send mail
- * from this domain, so keep the token secret and change it if it ever leaks.
- * Change ADMIN_TOKEN below to rotate the password.
+ * The SMTP username + app-password are supplied with each request from
+ * mailer.html and are NEVER stored on the server or committed to git.
+ *
+ * POST fields:
+ *   token     admin password (must match ADMIN_TOKEN_HASH)
+ *   smtp_user SMTP login = the sending email (e.g. you@gmail.com)
+ *   smtp_pass SMTP password — for Gmail, a 16-char App Password
+ *   smtp_host optional, default smtp.gmail.com
+ *   smtp_port optional, default 587 (STARTTLS)
+ *   to        recipient email
+ *   subject   email subject
+ *   fromname  optional display name (default = ADIC)
+ *   template  the uploaded .html / .htm file (becomes the email body)
  */
 
 // ---------------------------------------------------------------------------
-// CONFIG — admin password, stored as a SHA-256 hash (never in plaintext, so
-// this file is safe to commit). To change the password, compute the new hash:
-//   PHP:   echo hash('sha256', 'YOUR-NEW-PASSWORD');
-//   shell: printf '%s' 'YOUR-NEW-PASSWORD' | sha256sum
-// and paste the result below. The current password is the one you were given.
+// CONFIG — admin gate, stored as a SHA-256 hash (safe to commit). Rotate with:
+//   printf '%s' 'YOUR-NEW-PASSWORD' | sha256sum
 // ---------------------------------------------------------------------------
 const ADMIN_TOKEN_HASH = 'a701e304d007968ab6a2119888735897abdeafe46978da0068b454546a53a920';
 
-// The "From" address. On shared hosting mail() is far more likely to be
-// accepted/delivered when the From is a real mailbox ON this domain.
-const FROM_EMAIL  = 'info@adic.sa';
-const FROM_NAME   = 'ADIC';
-
-// Max template size (bytes) — guards against giant uploads.
-const MAX_BYTES   = 2 * 1024 * 1024; // 2 MB
+const MAX_BYTES = 2 * 1024 * 1024; // 2 MB template cap
 
 header('Content-Type: application/json; charset=UTF-8');
 
@@ -46,16 +45,25 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // --- Auth -----------------------------------------------------------------
-$token = (string) ($_POST['token'] ?? '');
-if (!hash_equals(ADMIN_TOKEN_HASH, hash('sha256', $token))) {
-    fail('Wrong password.', 403);
+if (!hash_equals(ADMIN_TOKEN_HASH, hash('sha256', (string) ($_POST['token'] ?? '')))) {
+    fail('Wrong admin password.', 403);
 }
 
 // --- Inputs ---------------------------------------------------------------
+$smtpUser = trim($_POST['smtp_user'] ?? '');
+$smtpPass = (string) ($_POST['smtp_pass'] ?? '');
+$smtpHost = trim($_POST['smtp_host'] ?? '') ?: 'smtp.gmail.com';
+$smtpPort = (int) (trim($_POST['smtp_port'] ?? '') ?: 587);
 $to       = trim($_POST['to'] ?? '');
 $subject  = trim($_POST['subject'] ?? '');
-$fromname = trim($_POST['fromname'] ?? '') ?: FROM_NAME;
+$fromname = trim($_POST['fromname'] ?? '') ?: 'ADIC';
 
+if (!filter_var($smtpUser, FILTER_VALIDATE_EMAIL)) {
+    fail('SMTP username must be the sending email address (e.g. you@gmail.com).');
+}
+if ($smtpPass === '') {
+    fail('SMTP app password is required.');
+}
 if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
     fail('Recipient is not a valid email address.');
 }
@@ -79,22 +87,47 @@ if ($html === false || $html === '') {
     fail('Could not read the uploaded template.');
 }
 
-// --- Send -----------------------------------------------------------------
-// Header injection guard: strip CR/LF from anything that goes into headers.
-$clean = static fn ($s) => str_replace(["\r", "\n"], '', $s);
-$subject  = $clean($subject);
-$fromname = $clean($fromname);
-
-$headers  = 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-Type: text/html; charset=UTF-8' . "\r\n";
-$headers .= 'From: ' . $fromname . ' <' . FROM_EMAIL . '>' . "\r\n";
-$headers .= 'Reply-To: ' . FROM_EMAIL . "\r\n";
-
-$sent = @mail($to, $subject, $html, $headers, '-f' . FROM_EMAIL);
-
-if (!$sent) {
-    fail('mail() returned false — the host likely blocks PHP mail(). '
-        . 'You will need an SMTP account instead.', 502);
+// --- Load PHPMailer from the WordPress that sits beneath this static site --
+$pm = __DIR__ . '/wp-includes/PHPMailer/';
+if (!is_file($pm . 'PHPMailer.php')) {
+    fail('PHPMailer not found on the server (expected under wp-includes/PHPMailer). '
+        . 'Tell the developer so they can bundle it.', 500);
 }
+require_once $pm . 'Exception.php';
+require_once $pm . 'PHPMailer.php';
+require_once $pm . 'SMTP.php';
 
-echo json_encode(['ok' => true, 'to' => $to]);
+// --- Send via authenticated SMTP -----------------------------------------
+$mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+try {
+    $mail->isSMTP();
+    $mail->Host       = $smtpHost;
+    $mail->Port       = $smtpPort;
+    $mail->SMTPAuth   = true;
+    $mail->Username   = $smtpUser;
+    $mail->Password   = $smtpPass;
+    // 587 => STARTTLS, 465 => implicit TLS
+    $mail->SMTPSecure = ($smtpPort === 465)
+        ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS
+        : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Timeout    = 20;
+    $mail->CharSet    = 'UTF-8';
+
+    // Gmail forces the From to the authenticated account; match it to avoid
+    // rejection, but keep the friendly display name from the form.
+    $mail->setFrom($smtpUser, $fromname);
+    $mail->addAddress($to);
+    $mail->addReplyTo($smtpUser, $fromname);
+
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body    = $html;
+    $mail->AltBody = 'This message contains an HTML template. Please view it in an HTML-capable email client.';
+
+    $mail->send();
+    echo json_encode(['ok' => true, 'to' => $to]);
+} catch (\Throwable $e) {
+    // ErrorInfo carries the SMTP server's own message (e.g. bad app password).
+    $detail = $mail->ErrorInfo ?: $e->getMessage();
+    fail('SMTP send failed: ' . $detail, 502);
+}
