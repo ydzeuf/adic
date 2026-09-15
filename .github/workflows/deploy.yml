@@ -18,7 +18,14 @@ jobs:
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      - name: Synchronize Files with GoDaddy WordPress Hosting Server
+      # The GoDaddy deployer runs its SSH setup under `bash -e`, so a single
+      # transient failure to reach the host (e.g. a brief ssh-keyscan blip)
+      # hard-fails the whole run with no retry. We therefore try it up to twice
+      # with a pause in between. Both attempts use the identical config, so the
+      # deployment mechanism (and where files land) is unchanged.
+      - name: Synchronize Files with GoDaddy WordPress Hosting Server (attempt 1)
+        id: deploy1
+        continue-on-error: true
         uses: godaddy-wordpress/gd-wordpress-deployer@v1
         with:
           remote_host: "rp4.311.myftpupload.com"
@@ -33,4 +40,21 @@ jobs:
           # Do NOT delete the existing WordPress files — they keep the health
           # check passing. Our .htaccess makes index.html the homepage, so the
           # static site is what visitors see; WordPress just sits unused beneath.
+          cleanup_deleted_files: "no"
+
+      - name: Wait before retry
+        if: steps.deploy1.outcome == 'failure'
+        run: |
+          echo "First deploy attempt failed — GoDaddy SSH may have been briefly unreachable. Waiting 60s before retrying…"
+          sleep 60
+
+      - name: Synchronize Files with GoDaddy WordPress Hosting Server (attempt 2)
+        if: steps.deploy1.outcome == 'failure'
+        uses: godaddy-wordpress/gd-wordpress-deployer@v1
+        with:
+          remote_host: "rp4.311.myftpupload.com"
+          ssh_user: "git_deployer_7ed4fc4a31_1176735"
+          ssh_private_key: ${{ secrets.PRIVATE_KEY }}
+          deployment_dest: ${{ github.event.inputs.deployment_dest }}
+          enable_health_check: "yes"
           cleanup_deleted_files: "no"
