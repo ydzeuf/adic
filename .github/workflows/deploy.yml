@@ -26,6 +26,10 @@ jobs:
       # "Process completed with exit code 1" and no message (2026-09-15
       # outage) — which looks like a config/key problem but is not: the
       # runner simply cannot open a TCP connection to port 22.
+      # (Real cause on 2026-09-15: GoDaddy silently renamed the site's temporary
+      # SSH domain rp4.311.myftpupload.com -> 1176735.us17.ssh.myftpupload.com.
+      # The current hostname is shown in Hosting Settings -> SSH/SFTP; update
+      # HOST below AND remote_host in the deploy step together.)
       #
       # This step retries for ~2 minutes to absorb short blips, then, if the
       # endpoint is still unreachable, FAILS FAST with a plain-English error
@@ -35,7 +39,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Preflight — check GoDaddy SSH endpoint is reachable
         env:
-          HOST: rp4.311.myftpupload.com
+          HOST: 1176735.us17.ssh.myftpupload.com
         run: |
           echo "DNS for $HOST:"
           getent ahosts "$HOST" || echo "::warning::DNS lookup for $HOST failed on this runner"
@@ -67,7 +71,7 @@ jobs:
 
           if tcp github.com 22; then
             echo "  control github.com:22 reachable => this runner CAN do outbound SSH; the problem is specific to the GoDaddy endpoint."
-            echo "::error::GoDaddy SSH endpoint $HOST:22 is not answering from this GitHub runner (4 tries over ~2 min) while github.com:22 works. This is on GoDaddy's side (SSH switched OFF on the hosting plan, sshd down, or port 22 firewalled) — NOT a workflow, key or secret problem. Check GoDaddy Hosting Settings → SSH/SFTP is ON, re-run later, or send this log to GoDaddy support."
+            echo "::error::GoDaddy SSH endpoint $HOST:22 is not answering from this GitHub runner (4 tries over ~2 min) while github.com:22 works. This is on GoDaddy's side (GoDaddy renamed the temporary SSH domain — check Hosting Settings → SSH/SFTP for the current hostname — or SSH switched OFF / sshd down / port 22 firewalled) — NOT a workflow, key or secret problem. Fix the hostname if it changed, re-run, or send this log to GoDaddy support."
           else
             echo "  control github.com:22 ALSO unreachable => this runner has no port-22 egress at all."
             echo "::error::This GitHub runner cannot reach ANY SSH endpoint (github.com:22 failed too) — a GitHub Actions / runner network problem, not GoDaddy. Re-run the job."
@@ -77,7 +81,7 @@ jobs:
       - name: Synchronize Files with GoDaddy WordPress Hosting Server
         uses: godaddy-wordpress/gd-wordpress-deployer@v1
         with:
-          remote_host: "rp4.311.myftpupload.com"
+          remote_host: "1176735.us17.ssh.myftpupload.com"
           ssh_user: "git_deployer_7ed4fc4a31_1176735"
           ssh_private_key: ${{ secrets.PRIVATE_KEY }}
           # blank = deploy the whole repo to the site root (httpdocs)
