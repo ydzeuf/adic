@@ -32,7 +32,11 @@ const BREVO_URL  = 'https://api.brevo.com/v3/smtp/email';
 header('Content-Type: application/json; charset=UTF-8');
 
 function fail($msg, $code = 400) {
-    http_response_code($code);
+    // Cloudflare fronts this site and REPLACES any 5xx origin response with its
+    // own generic "error code: 5xx" page, which would hide our JSON error. So
+    // send application errors as 200 (the client reads {ok:false}, not the
+    // status); keep 4xx for genuine client errors, which Cloudflare passes through.
+    http_response_code($code >= 500 ? 200 : $code);
     echo json_encode(['ok' => false, 'error' => $msg]);
     exit;
 }
