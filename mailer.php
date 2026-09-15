@@ -1,27 +1,23 @@
 <?php
 /**
- * ADIC — private HTML-template mailer endpoint (SMTP version).
+ * ADIC — private HTML-template mailer endpoint (Brevo HTTPS API version).
  *
- * Sends an uploaded .html file as the body of an HTML email, through an
- * AUTHENTICATED SMTP account (Gmail by default) — NOT PHP mail(), which this
- * GoDaddy host accepts but does not actually deliver to Gmail/Outlook.
+ * This GoDaddy host BLOCKS outbound SMTP (ports 25/465/587 time out), and its
+ * PHP mail() hands off to a low-reputation relay that Gmail drops. So we send
+ * through Brevo's transactional email API over HTTPS (port 443), which is not
+ * blocked. Nothing extra to install — just PHP cURL.
  *
- * Reuses the PHPMailer library that ships with WordPress (wp-includes), so
- * nothing extra needs installing.
- *
- * The SMTP username + app-password are supplied with each request from
- * mailer.html and are NEVER stored on the server or committed to git.
+ * The Brevo API key is supplied with each request from mailer.html and is
+ * NEVER stored on the server or committed to git.
  *
  * POST fields:
  *   token     admin password (must match ADMIN_TOKEN_HASH)
- *   smtp_user SMTP login = the sending email (e.g. you@gmail.com)
- *   smtp_pass SMTP password — for Gmail, a 16-char App Password
- *   smtp_host optional, default smtp.gmail.com
- *   smtp_port optional, default 587 (STARTTLS)
+ *   api_key   Brevo API key (starts with "xkeysib-")
+ *   sender    sender email — must be a VERIFIED sender in your Brevo account
+ *   fromname  optional display name (default = ADIC)
  *   to        recipient email
  *   subject   email subject
- *   fromname  optional display name (default = ADIC)
- *   template  the uploaded .html / .htm file (becomes the email body)
+ *   template  the uploaded .html / .htm file (becomes htmlContent)
  */
 
 // ---------------------------------------------------------------------------
@@ -30,7 +26,8 @@
 // ---------------------------------------------------------------------------
 const ADMIN_TOKEN_HASH = 'a701e304d007968ab6a2119888735897abdeafe46978da0068b454546a53a920';
 
-const MAX_BYTES = 2 * 1024 * 1024; // 2 MB template cap
+const MAX_BYTES  = 2 * 1024 * 1024; // 2 MB template cap
+const BREVO_URL  = 'https://api.brevo.com/v3/smtp/email';
 
 header('Content-Type: application/json; charset=UTF-8');
 
@@ -50,19 +47,17 @@ if (!hash_equals(ADMIN_TOKEN_HASH, hash('sha256', (string) ($_POST['token'] ?? '
 }
 
 // --- Inputs ---------------------------------------------------------------
-$smtpUser = trim($_POST['smtp_user'] ?? '');
-$smtpPass = (string) ($_POST['smtp_pass'] ?? '');
-$smtpHost = trim($_POST['smtp_host'] ?? '') ?: 'smtp.gmail.com';
-$smtpPort = (int) (trim($_POST['smtp_port'] ?? '') ?: 587);
+$apiKey   = trim($_POST['api_key'] ?? '');
+$sender   = trim($_POST['sender'] ?? '');
+$fromname = trim($_POST['fromname'] ?? '') ?: 'ADIC';
 $to       = trim($_POST['to'] ?? '');
 $subject  = trim($_POST['subject'] ?? '');
-$fromname = trim($_POST['fromname'] ?? '') ?: 'ADIC';
 
-if (!filter_var($smtpUser, FILTER_VALIDATE_EMAIL)) {
-    fail('SMTP username must be the sending email address (e.g. you@gmail.com).');
+if ($apiKey === '') {
+    fail('Brevo API key is required.');
 }
-if ($smtpPass === '') {
-    fail('SMTP app password is required.');
+if (!filter_var($sender, FILTER_VALIDATE_EMAIL)) {
+    fail('Sender must be a valid email address that is verified in your Brevo account.');
 }
 if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
     fail('Recipient is not a valid email address.');
@@ -87,47 +82,48 @@ if ($html === false || $html === '') {
     fail('Could not read the uploaded template.');
 }
 
-// --- Load PHPMailer from the WordPress that sits beneath this static site --
-$pm = __DIR__ . '/wp-includes/PHPMailer/';
-if (!is_file($pm . 'PHPMailer.php')) {
-    fail('PHPMailer not found on the server (expected under wp-includes/PHPMailer). '
-        . 'Tell the developer so they can bundle it.', 500);
+// --- Send via Brevo transactional API over HTTPS -------------------------
+if (!function_exists('curl_init')) {
+    fail('PHP cURL is not available on this server.', 500);
 }
-require_once $pm . 'Exception.php';
-require_once $pm . 'PHPMailer.php';
-require_once $pm . 'SMTP.php';
 
-// --- Send via authenticated SMTP -----------------------------------------
-$mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-try {
-    $mail->isSMTP();
-    $mail->Host       = $smtpHost;
-    $mail->Port       = $smtpPort;
-    $mail->SMTPAuth   = true;
-    $mail->Username   = $smtpUser;
-    $mail->Password   = $smtpPass;
-    // 587 => STARTTLS, 465 => implicit TLS
-    $mail->SMTPSecure = ($smtpPort === 465)
-        ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS
-        : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Timeout    = 20;
-    $mail->CharSet    = 'UTF-8';
+$payload = json_encode([
+    'sender'      => ['name' => $fromname, 'email' => $sender],
+    'to'          => [['email' => $to]],
+    'subject'     => $subject,
+    'htmlContent' => $html,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-    // Gmail forces the From to the authenticated account; match it to avoid
-    // rejection, but keep the friendly display name from the form.
-    $mail->setFrom($smtpUser, $fromname);
-    $mail->addAddress($to);
-    $mail->addReplyTo($smtpUser, $fromname);
+$ch = curl_init(BREVO_URL);
+curl_setopt_array($ch, [
+    CURLOPT_POST           => true,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT        => 25,
+    CURLOPT_HTTPHEADER     => [
+        'accept: application/json',
+        'content-type: application/json',
+        'api-key: ' . $apiKey,
+    ],
+    CURLOPT_POSTFIELDS     => $payload,
+]);
+$body = curl_exec($ch);
+$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$cerr = curl_error($ch);
+curl_close($ch);
 
-    $mail->isHTML(true);
-    $mail->Subject = $subject;
-    $mail->Body    = $html;
-    $mail->AltBody = 'This message contains an HTML template. Please view it in an HTML-capable email client.';
-
-    $mail->send();
-    echo json_encode(['ok' => true, 'to' => $to]);
-} catch (\Throwable $e) {
-    // ErrorInfo carries the SMTP server's own message (e.g. bad app password).
-    $detail = $mail->ErrorInfo ?: $e->getMessage();
-    fail('SMTP send failed: ' . $detail, 502);
+if ($body === false) {
+    fail('Could not reach the Brevo API: ' . $cerr, 502);
 }
+
+$resp = json_decode($body, true);
+
+// Brevo returns 201 Created with a messageId on success.
+if ($code === 201) {
+    echo json_encode(['ok' => true, 'to' => $to, 'messageId' => $resp['messageId'] ?? null]);
+    exit;
+}
+
+// Otherwise surface Brevo's own error message (e.g. unrecognised key, sender
+// not verified) so the admin can fix it.
+$brevoMsg = is_array($resp) ? ($resp['message'] ?? $body) : $body;
+fail('Brevo rejected the send (HTTP ' . $code . '): ' . $brevoMsg, 502);

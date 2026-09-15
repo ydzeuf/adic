@@ -20,19 +20,15 @@
     h1 { margin: 0 0 4px; font-size: 1.25rem; color: var(--navy); }
     .sub { margin: 0 0 18px; font-size: .85rem; color: #64748b; }
     label { display: block; font-size: .8rem; font-weight: 600; margin: 14px 0 5px; }
-    input[type=text], input[type=email], input[type=password], input[type=number], input[type=file] {
+    input[type=text], input[type=email], input[type=password], input[type=file] {
       width: 100%; padding: 10px 12px; border: 1px solid var(--line);
       border-radius: 8px; font-size: .95rem; background: #fff;
     }
     input:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
-    .row { display: flex; gap: 10px; }
-    .row > div { flex: 1; }
     .hint { font-size: .72rem; color: #94a3b8; margin-top: 4px; }
     .hint a { color: var(--blue); }
     fieldset { border: 1px solid var(--line); border-radius: 10px; padding: 6px 14px 16px; margin: 20px 0 0; }
     legend { font-size: .78rem; font-weight: 700; color: var(--navy); padding: 0 6px; }
-    details { margin-top: 10px; }
-    summary { font-size: .78rem; color: var(--blue); cursor: pointer; }
     button {
       margin-top: 22px; width: 100%; padding: 12px; border: 0; border-radius: 8px;
       background: var(--navy); color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
@@ -46,38 +42,26 @@
 <body>
   <div class="card">
     <h1>Template Mailer</h1>
-    <p class="sub">Admin only — send an uploaded HTML template to one recipient, via your own email account.</p>
+    <p class="sub">Admin only — send an uploaded HTML template to one recipient, via the Brevo API.</p>
 
     <form id="f">
       <label for="token">Admin password</label>
       <input type="password" id="token" name="token" autocomplete="off" required>
 
       <fieldset>
-        <legend>Send through your email (SMTP)</legend>
+        <legend>Brevo (email delivery)</legend>
 
-        <label for="smtp_user">Your email address (SMTP login)</label>
-        <input type="email" id="smtp_user" name="smtp_user" placeholder="you@gmail.com" autocomplete="off" required>
+        <label for="api_key">Brevo API key</label>
+        <input type="password" id="api_key" name="api_key" placeholder="xkeysib-…" autocomplete="off" required>
+        <p class="hint">Create one in Brevo → <b>SMTP &amp; API → API Keys</b>
+          (<a href="https://app.brevo.com/settings/keys/api" target="_blank" rel="noopener">app.brevo.com/settings/keys/api</a>).
+          Never stored — you paste it each time.</p>
 
-        <label for="smtp_pass">App password</label>
-        <input type="password" id="smtp_pass" name="smtp_pass" autocomplete="off" required>
-        <p class="hint">For Gmail this is a 16-char <b>App Password</b> (not your normal password) —
-          create one at <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">myaccount.google.com/apppasswords</a>
-          (needs 2-Step Verification on). Never stored — you type it each time.</p>
-
-        <details>
-          <summary>Advanced — SMTP server (default: Gmail)</summary>
-          <div class="row" style="margin-top:8px">
-            <div>
-              <label for="smtp_host">SMTP host</label>
-              <input type="text" id="smtp_host" name="smtp_host" placeholder="smtp.gmail.com">
-            </div>
-            <div>
-              <label for="smtp_port">Port</label>
-              <input type="number" id="smtp_port" name="smtp_port" placeholder="587">
-            </div>
-          </div>
-          <p class="hint">Leave blank for Gmail. Outlook: smtp.office365.com / 587. GoDaddy: smtpout.secureserver.net / 465.</p>
-        </details>
+        <label for="sender">Sender email (verified in Brevo)</label>
+        <input type="email" id="sender" name="sender" placeholder="you@gmail.com" autocomplete="off" required>
+        <p class="hint">Must be a sender you've verified in Brevo →
+          <a href="https://app.brevo.com/senders/list" target="_blank" rel="noopener">Senders</a>.
+          This becomes the “From” address.</p>
       </fieldset>
 
       <label for="to">Send to</label>
@@ -102,22 +86,22 @@
     const form = document.getElementById('f');
     const btn  = document.getElementById('send');
     const msg  = document.getElementById('msg');
-    const userField = document.getElementById('smtp_user');
+    const senderField = document.getElementById('sender');
 
-    // Remember only the sending address on this device (never the password).
-    try { const u = localStorage.getItem('adic_mailer_user'); if (u) userField.value = u; } catch (e) {}
+    // Remember only the sender address on this device (never the API key).
+    try { const s = localStorage.getItem('adic_mailer_sender'); if (s) senderField.value = s; } catch (e) {}
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       msg.className = ''; msg.textContent = '';
       btn.disabled = true; btn.textContent = 'Sending…';
-      try { localStorage.setItem('adic_mailer_user', userField.value.trim()); } catch (e) {}
+      try { localStorage.setItem('adic_mailer_sender', senderField.value.trim()); } catch (e) {}
       try {
         const res = await fetch('mailer.php', { method: 'POST', body: new FormData(form) });
         const data = await res.json().catch(() => ({ ok: false, error: 'Bad server response.' }));
         if (data.ok) {
           msg.className = 'ok';
-          msg.textContent = '✓ Sent to ' + data.to;
+          msg.textContent = '✓ Sent to ' + data.to + (data.messageId ? '\nBrevo id: ' + data.messageId : '');
           document.getElementById('template').value = '';
         } else {
           msg.className = 'err';
