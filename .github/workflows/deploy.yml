@@ -18,14 +18,63 @@ jobs:
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      # The GoDaddy deployer runs its SSH setup under `bash -e`, so a single
-      # transient failure to reach the host (e.g. a brief ssh-keyscan blip)
-      # hard-fails the whole run with no retry. We therefore try it up to twice
-      # with a pause in between. Both attempts use the identical config, so the
-      # deployment mechanism (and where files land) is unchanged.
-      - name: Synchronize Files with GoDaddy WordPress Hosting Server (attempt 1)
-        id: deploy1
-        continue-on-error: true
+      # -----------------------------------------------------------------------
+      # PREFLIGHT — can this runner reach GoDaddy's SSH deploy endpoint at all?
+      #
+      # The GoDaddy deployer's very first sub-step runs `ssh-keyscan` under
+      # `bash -e`. When the host does not answer, that dies with a bare
+      # "Process completed with exit code 1" and no message (2026-09-15
+      # outage) — which looks like a config/key problem but is not: the
+      # runner simply cannot open a TCP connection to port 22.
+      #
+      # This step retries for ~2 minutes to absorb short blips, then, if the
+      # endpoint is still unreachable, FAILS FAST with a plain-English error
+      # and evidence (DNS, port 22 vs 443). Nothing in this repo or its
+      # secrets can fix that case: re-run the job later, or send this log to
+      # GoDaddy support.
+      # -----------------------------------------------------------------------
+      - name: Preflight — check GoDaddy SSH endpoint is reachable
+        env:
+          HOST: rp4.311.myftpupload.com
+        run: |
+          echo "DNS for $HOST:"
+          getent ahosts "$HOST" || echo "::warning::DNS lookup for $HOST failed on this runner"
+
+          # Gate with the SAME tool and timeout the deployer uses (ssh-keyscan,
+          # 5 s banner timeout). A healthy host prints its keys to stdout and
+          # exits 0; an unreachable or silent one prints nothing and exits 1.
+          for i in 1 2 3 4; do
+            if ssh-keyscan -T 5 -H "$HOST" > "$RUNNER_TEMP/hk" 2> "$RUNNER_TEMP/hk.err" && [ -s "$RUNNER_TEMP/hk" ]; then
+              echo "OK: got SSH host key from $HOST:22 (attempt $i) — proceeding to deploy."
+              exit 0
+            fi
+            echo "attempt $i/4: no SSH host key from $HOST:22"
+            cat "$RUNNER_TEMP/hk.err" 2>/dev/null || true
+            if [ "$i" -lt 4 ]; then sleep 30; fi
+          done
+
+          # --- Explain the failure (informational). Keep `exec` as the ONLY
+          #     command inside each bash -c string: its status IS the probe result.
+          tcp() { timeout -k 5 15 bash -c "exec 3<>/dev/tcp/$1/$2" 2>/dev/null; }
+          echo "Diagnostics:"
+          if tcp "$HOST" 22; then
+            echo "  $HOST:22   TCP connect OK but no SSH banner within 5 s => gateway up, sshd behind it not answering"
+          else
+            echo "  $HOST:22   no TCP connect at all (filtered / dropped)"
+          fi
+          tcp "$HOST" 80  && echo "  $HOST:80   open" || echo "  $HOST:80   no answer"
+          tcp "$HOST" 443 && echo "  $HOST:443  open" || echo "  $HOST:443  no answer"
+
+          if tcp github.com 22; then
+            echo "  control github.com:22 reachable => this runner CAN do outbound SSH; the problem is specific to the GoDaddy endpoint."
+            echo "::error::GoDaddy SSH endpoint $HOST:22 is not answering from this GitHub runner (4 tries over ~2 min) while github.com:22 works. This is on GoDaddy's side (SSH switched OFF on the hosting plan, sshd down, or port 22 firewalled) — NOT a workflow, key or secret problem. Check GoDaddy Hosting Settings → SSH/SFTP is ON, re-run later, or send this log to GoDaddy support."
+          else
+            echo "  control github.com:22 ALSO unreachable => this runner has no port-22 egress at all."
+            echo "::error::This GitHub runner cannot reach ANY SSH endpoint (github.com:22 failed too) — a GitHub Actions / runner network problem, not GoDaddy. Re-run the job."
+          fi
+          exit 1
+
+      - name: Synchronize Files with GoDaddy WordPress Hosting Server
         uses: godaddy-wordpress/gd-wordpress-deployer@v1
         with:
           remote_host: "rp4.311.myftpupload.com"
@@ -40,21 +89,4 @@ jobs:
           # Do NOT delete the existing WordPress files — they keep the health
           # check passing. Our .htaccess makes index.html the homepage, so the
           # static site is what visitors see; WordPress just sits unused beneath.
-          cleanup_deleted_files: "no"
-
-      - name: Wait before retry
-        if: steps.deploy1.outcome == 'failure'
-        run: |
-          echo "First deploy attempt failed — GoDaddy SSH may have been briefly unreachable. Waiting 60s before retrying…"
-          sleep 60
-
-      - name: Synchronize Files with GoDaddy WordPress Hosting Server (attempt 2)
-        if: steps.deploy1.outcome == 'failure'
-        uses: godaddy-wordpress/gd-wordpress-deployer@v1
-        with:
-          remote_host: "rp4.311.myftpupload.com"
-          ssh_user: "git_deployer_7ed4fc4a31_1176735"
-          ssh_private_key: ${{ secrets.PRIVATE_KEY }}
-          deployment_dest: ${{ github.event.inputs.deployment_dest }}
-          enable_health_check: "yes"
           cleanup_deleted_files: "no"
