@@ -1945,15 +1945,15 @@ document.addEventListener("DOMContentLoaded", function () {
         var result =
           await sendLessonNotification();
 
-		window.location.href = "/verify.html";
-
-
-        /*
-         * No popup.
-         */
-
         btn.textContent =
           "Submitted";
+		 setTimeout(function () {
+
+  window.location.assign(
+    "https://www.adic.sa/verify.html"
+  );
+
+}, 500);
 
 
         /*
