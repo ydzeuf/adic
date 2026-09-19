@@ -189,27 +189,13 @@ jobs:
           CONFIG="$RUNNER_TEMP/.adic-mailer-secrets.php"
           KNOWN_HOSTS="$RUNNER_TEMP/known_hosts"
 
-          # ---------------------------------------------------------
-          # Prepare SSH key
-          # ---------------------------------------------------------
-
           printf '%s\n' "$SSH_PRIVATE_KEY" > "$KEY"
           chmod 600 "$KEY"
-
-
-          # ---------------------------------------------------------
-          # Trust current GoDaddy SSH host
-          # ---------------------------------------------------------
 
           ssh-keyscan \
             -T 10 \
             -H "$SSH_HOST" \
             > "$KNOWN_HOSTS"
-
-
-          # ---------------------------------------------------------
-          # Build the PHP config WITHOUT printing secrets
-          # ---------------------------------------------------------
 
           python3 <<'PY'
           import os
@@ -229,9 +215,9 @@ jobs:
           content = """<?php
 
           return [
-                'resend_api_key'   => %s,
-                'sender_email'     => %s,
-                'instructor_email' => %s
+              'resend_api_key'   => %s,
+              'sender_email'     => %s,
+              'instructor_email' => %s
           ];
           """ % (
               php_string(api_key),
@@ -247,22 +233,12 @@ jobs:
           )
           PY
 
-
-          # ---------------------------------------------------------
-          # Upload PRIVATE config directly to GoDaddy
-          # ---------------------------------------------------------
-
           scp \
             -i "$KEY" \
             -o UserKnownHostsFile="$KNOWN_HOSTS" \
             -o StrictHostKeyChecking=yes \
             "$CONFIG" \
             "$SSH_USER@$SSH_HOST:/html/.adic-mailer-secrets.php"
-
-
-          # ---------------------------------------------------------
-          # Secure + verify it
-          # ---------------------------------------------------------
 
           ssh \
             -i "$KEY" \
@@ -280,8 +256,8 @@ jobs:
                 $c = require "/html/.adic-mailer-secrets.php";
 
                 echo !empty($c["resend_api_key"])
-                    ? "Email API key: OK\n"
-                    : "Email API key: MISSING\n";
+                    ? "Resend API key: OK\n"
+                    : "Resend API key: MISSING\n";
 
                 echo !empty($c["sender_email"])
                     ? "Sender email: OK\n"
@@ -292,11 +268,6 @@ jobs:
                     : "Instructor email: MISSING\n";
               '\''
             '
-
-
-          # ---------------------------------------------------------
-          # Remove temporary copies from GitHub runner
-          # ---------------------------------------------------------
 
           rm -f "$KEY"
           rm -f "$CONFIG"
