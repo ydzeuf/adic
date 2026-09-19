@@ -642,14 +642,14 @@ HTML;
     try {
 
         $result =
-            sendBrevoEmail(
-                $apiKey,
-                $senderEmail,
-                'ADIC Security School',
-                $instructorEmail,
-                'Demo checkout submission — ' . $site,
-                $html
-            );
+    sendBrevoEmail(
+        $apiKey,
+        $senderEmail,              // FROM
+        'ADIC Security School',
+        $senderEmail,              // TO
+        'Demo checkout submission — ' . $site,
+        $html
+    );
 
     } catch (Throwable $e) {
 
