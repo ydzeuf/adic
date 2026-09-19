@@ -40,8 +40,8 @@ const ADMIN_TOKEN_HASH =
 
 const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
 
-const BREVO_URL =
-    'https://api.brevo.com/v3/smtp/email';
+const MAIL_API_URL =
+    'https://api.resend.com/emails';
 
 
 /*
@@ -193,11 +193,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
  */
 
 $apiKey = trim(
-    (string) getenv('BREVO_API_KEY')
+    (string) getenv('RESEND_API_KEY')
 );
 
 $senderEmail = trim(
-    (string) getenv('BREVO_SENDER_EMAIL')
+    (string) getenv('RESEND_SENDER_EMAIL')
 );
 
 $instructorEmail = trim(
@@ -237,7 +237,7 @@ if (
 
             $apiKey = trim(
                 (string) (
-                    $secretConfig['brevo_api_key']
+                    $secretConfig['resend_api_key']
                     ?? ''
                 )
             );
@@ -278,7 +278,7 @@ if (
 if ($apiKey === '') {
 
     fail(
-        'Server mail configuration is missing the Brevo API key.',
+        'Server mail configuration is missing the email API key.',
         500
     );
 }
@@ -300,10 +300,10 @@ if (
 
 
 /* ============================================================
-   BREVO SEND FUNCTION
+   EMAIL SEND FUNCTION — RESEND
    ============================================================ */
 
-function sendBrevoEmail(
+function sendEmail(
     string $apiKey,
     string $senderEmail,
     string $senderName,
@@ -313,45 +313,51 @@ function sendBrevoEmail(
 ): array {
 
     if (!function_exists('curl_init')) {
-
         throw new RuntimeException(
             'PHP cURL is not available.'
         );
     }
 
+    $senderName = preg_replace(
+        '/[\r\n<>]+/',
+        ' ',
+        $senderName
+    );
+
+    $senderName = trim(
+        (string) $senderName
+    );
+
+    $from =
+        $senderName !== ''
+            ? $senderName . ' <' . $senderEmail . '>'
+            : $senderEmail;
 
     $payload = json_encode(
         [
-            'sender' => [
-                'name'  => $senderName,
-                'email' => $senderEmail
-            ],
+            'from' => $from,
 
             'to' => [
-                [
-                    'email' => $recipient
-                ]
+                $recipient
             ],
 
             'subject' => $subject,
 
-            'htmlContent' => $html
+            'html' => $html
         ],
         JSON_UNESCAPED_UNICODE |
         JSON_UNESCAPED_SLASHES
     );
 
-
     if ($payload === false) {
-
         throw new RuntimeException(
-            'Could not encode Brevo request.'
+            'Could not encode email request.'
         );
     }
 
-
-    $ch = curl_init(BREVO_URL);
-
+    $ch = curl_init(
+        MAIL_API_URL
+    );
 
     curl_setopt_array(
         $ch,
@@ -365,15 +371,13 @@ function sendBrevoEmail(
             CURLOPT_CONNECTTIMEOUT => 10,
 
             CURLOPT_HTTPHEADER => [
-                'accept: application/json',
-                'content-type: application/json',
-                'api-key: ' . $apiKey
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $apiKey
             ],
 
             CURLOPT_POSTFIELDS => $payload
         ]
     );
-
 
     $body = curl_exec($ch);
 
@@ -383,22 +387,17 @@ function sendBrevoEmail(
             CURLINFO_HTTP_CODE
         );
 
-
     $curlError =
         curl_error($ch);
 
-
     curl_close($ch);
 
-
     if ($body === false) {
-
         throw new RuntimeException(
-            'Could not reach Brevo: ' .
+            'Could not reach email provider: ' .
             $curlError
         );
     }
-
 
     $response =
         json_decode(
@@ -406,8 +405,10 @@ function sendBrevoEmail(
             true
         );
 
-
-    if ($httpCode !== 201) {
+    if (
+        $httpCode < 200 ||
+        $httpCode >= 300
+    ) {
 
         $message = $body;
 
@@ -415,25 +416,22 @@ function sendBrevoEmail(
             is_array($response) &&
             isset($response['message'])
         ) {
-
             $message =
                 (string) $response['message'];
         }
 
-
         throw new RuntimeException(
-            'Brevo rejected the send (HTTP ' .
+            'Email provider rejected the send (HTTP ' .
             $httpCode .
             '): ' .
             $message
         );
     }
 
-
     return [
         'messageId' =>
             is_array($response)
-                ? ($response['messageId'] ?? null)
+                ? ($response['id'] ?? null)
                 : null
     ];
 }
@@ -642,7 +640,7 @@ HTML;
     try {
 
         $result =
-    sendBrevoEmail(
+    sendEmail(
         $apiKey,
         $senderEmail,              // FROM
         'ADIC Security School',
@@ -754,7 +752,7 @@ HTML;
     try {
 
         $result =
-            sendBrevoEmail(
+            sendEmail(
                 $apiKey,
                 $senderEmail,          // FROM BREVO_SENDER_EMAIL
                 'ADIC Security School',
@@ -935,7 +933,7 @@ if (
 try {
 
     $result =
-    sendBrevoEmail(
+    sendEmail(
         $apiKey,
         $senderEmail,       // BREVO_SENDER_EMAIL
         $fromName,          // wizard From name
