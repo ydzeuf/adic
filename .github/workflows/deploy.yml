@@ -123,22 +123,6 @@ jobs:
           rm -f "$KEY"
 
           echo "Direct deployment completed."
-        uses: godaddy-wordpress/gd-wordpress-deployer@v1
-        with:
-          remote_host: "1176735.us17.ssh.myftpupload.com"
-          ssh_user: "git_deployer_7ed4fc4a31_1176735"
-          ssh_private_key: ${{ secrets.PRIVATE_KEY }}
-          # blank = deploy the whole repo to the site root (httpdocs)
-          deployment_dest: ${{ github.event.inputs.deployment_dest }}
-          # Keep health check ON: with an empty (root) destDir, the action
-          # mis-parses "--skipHealthCheck" as the target dir and fails. Leaving
-          # it on avoids that bug.
-          enable_health_check: "yes"
-          # Do NOT delete the existing WordPress files — they keep the health
-          # check passing. Our .htaccess makes index.html the homepage, so the
-          # static site is what visitors see; WordPress just sits unused beneath.
-          cleanup_deleted_files: "no"
-
       - name: Install private mailer configuration
         env:
           SSH_HOST: "1176735.us17.ssh.myftpupload.com"
