@@ -15,4 +15,3 @@ id_ed25519*
 # local Claude Code tooling
 .claude/
 
-.adic-mailer-secrets.php
