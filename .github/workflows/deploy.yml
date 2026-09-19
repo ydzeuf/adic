@@ -78,7 +78,51 @@ jobs:
           fi
           exit 1
 
-      - name: Synchronize Files with GoDaddy WordPress Hosting Server
+      - name: Deploy files directly to GoDaddy
+        env:
+          SSH_HOST: "1176735.us17.ssh.myftpupload.com"
+          SSH_USER: "git_deployer_7ed4fc4a31_1176735"
+          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          KEY="$RUNNER_TEMP/godaddy_key"
+          KNOWN_HOSTS="$RUNNER_TEMP/known_hosts"
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$KEY"
+          chmod 600 "$KEY"
+
+          ssh-keyscan -T 10 -H "$SSH_HOST" > "$KNOWN_HOSTS"
+
+          echo "Testing SSH command access..."
+
+          ssh \
+            -i "$KEY" \
+            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            'echo "SSH OK"; test -d /html; echo "/html OK"'
+
+          echo "Deploying repository files..."
+
+          rsync \
+            -az \
+            --checksum \
+            --itemize-changes \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.claude/' \
+            --exclude='.adic-mailer-secrets.php' \
+            --exclude='node_modules/' \
+            --exclude='Thumbs.db' \
+            --exclude='.DS_Store' \
+            -e "ssh -i $KEY -o UserKnownHostsFile=$KNOWN_HOSTS -o StrictHostKeyChecking=yes" \
+            ./ \
+            "$SSH_USER@$SSH_HOST:/html/"
+
+          rm -f "$KEY"
+
+          echo "Direct deployment completed."
         uses: godaddy-wordpress/gd-wordpress-deployer@v1
         with:
           remote_host: "1176735.us17.ssh.myftpupload.com"
