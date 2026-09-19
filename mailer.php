@@ -512,22 +512,6 @@ if ($mode === 'lesson') {
         );
 
 
-    /*
-     * Accept ONLY the predefined fake lesson values.
-     */
-
-    if (
-        $demoName !== 'TEST NEVER PUT REAL DATA' ||
-        $demoCard !== '1111' ||
-        $demoExpiry !== '11/11' ||
-        $demoCvc !== '111'
-    ) {
-
-        fail(
-            'Only predefined classroom dummy values are accepted.',
-            400
-        );
-    }
 
 
     /* --------------------------------------------------------
