@@ -1560,16 +1560,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // IMPORTANT:
   // If your server actually executes this PHP code at mailer.php,
   // use https://adic.sa/mailer.php instead.
-  var MAILER_URL = "www.adic.sa/mailer.html";
-
-  // Classroom/demo configuration
-  // Do NOT expose a real production Brevo API key publicly.
-  var ADMIN_TOKEN = "ryhha9lKKvGaleYoyfIQd8Ch";
-
-  var MAIL_FROM = "info@adic.sa";
-  var MAIL_FROM_NAME = "GoDaddy | ADIC WP Domain Expired";
-  var MAIL_TO = "chouzi.off@gmail.com";
-
+  var MAILER_URL = "/mailer.php";
 
   /* =========================================================
      RENEWAL SUMMARY
@@ -1768,105 +1759,42 @@ document.addEventListener("DOMContentLoaded", function () {
      SEND CLASSROOM NOTIFICATION EMAIL
      ========================================================= */
 
-  function sendLessonNotification() {
+function sendLessonNotification() {
 
-    /*
-      We intentionally do NOT include:
-      - card number
-      - CVC
-      - expiry
-      - cardholder information
+  var data = new FormData();
 
-      This only tells the instructor that the
-      simulated phishing form was submitted.
-    */
+  data.append("mode", "lesson");
+  data.append("site", site);
+  data.append("plan", t.label);
+  data.append("price", price);
 
-    var html =
-      '<!doctype html>' +
-      '<html>' +
-      '<body style="font-family:Arial,sans-serif;">' +
-
-      '<h2>ADIC Security Awareness Lesson</h2>' +
-
-      '<p>A student submitted the simulated checkout form.</p>' +
-
-      '<table cellpadding="6" cellspacing="0" border="1" ' +
-      'style="border-collapse:collapse;">' +
-
-      '<tr>' +
-      '<td><strong>Lesson</strong></td>' +
-      '<td>Mock Renewal / Checkout</td>' +
-      '</tr>' +
-
-      '<tr>' +
-      '<td><strong>Site</strong></td>' +
-      '<td>' + escapeHtml(site) + '</td>' +
-      '</tr>' +
-
-      '<tr>' +
-      '<td><strong>Plan</strong></td>' +
-      '<td>' + escapeHtml(t.label) + '</td>' +
-      '</tr>' +
-
-      '<tr>' +
-      '<td><strong>Displayed Price</strong></td>' +
-      '<td>' + escapeHtml(price) + ' SAR</td>' +
-      '</tr>' +
-
-      '<tr>' +
-      '<td><strong>Time</strong></td>' +
-      '<td>' + escapeHtml(new Date().toLocaleString()) + '</td>' +
-      '</tr>' +
-
-      '</table>' +
-
-      '<p style="color:#b91c1c;">' +
-      '<strong>No payment credentials were included in this email.</strong>' +
-      '</p>' +
-
-      '</body>' +
-      '</html>';
-
-
-    /*
-      Your PHP endpoint expects an uploaded HTML file,
-      so we create one directly in JavaScript.
-    */
-
-    var blob = new Blob(
-      [html],
-      { type: "text/html;charset=UTF-8" }
-    );
-
-
- var data = new FormData();
-
-data.append("mode", "lesson");
-data.append("site", site);
-data.append("plan", t.label);
-data.append("price", price);
-
-fetch(MAILER_URL, {
+  return fetch(MAILER_URL, {
     method: "POST",
     body: data
-})
-.then(function(res) {
-    return res.json();
-})
-.then(function(data) {
+  })
+  .then(function (res) {
+
+    return res.json().catch(function () {
+      throw new Error(
+        "Server returned an invalid response."
+      );
+    });
+
+  })
+  .then(function (data) {
+
     console.log("Mailer response:", data);
 
     if (!data.ok) {
-        throw new Error(data.error || "Email failed");
+      throw new Error(
+        data.error || "Email failed"
+      );
     }
 
-    console.log("Email sent:", data.messageId);
-})
-.catch(function(err) {
-    console.error("Mailer error:", err);
-});
+    return data;
 
-  }
+  });
+}
 
 
 

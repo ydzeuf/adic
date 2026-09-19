@@ -44,76 +44,125 @@
     <h1>Template Mailer</h1>
     <p class="sub">Admin only — send an uploaded HTML template to one recipient, via the Brevo API.</p>
 
-    <form id="f">
-      <label for="token">Admin password</label>
-      <input type="password" id="token" name="token" autocomplete="off" required>
+<form id="f">
 
-      <fieldset>
-        <legend>Brevo (email delivery)</legend>
+  <input type="hidden" name="mode" value="admin">
 
-        <label for="api_key">Brevo API key</label>
-        <input type="password" id="api_key" name="api_key" placeholder="xkeysib-…" autocomplete="off" required>
-        <p class="hint">Create one in Brevo → <b>SMTP &amp; API → API Keys</b>
-          (<a href="https://app.brevo.com/settings/keys/api" target="_blank" rel="noopener">app.brevo.com/settings/keys/api</a>).
-          Never stored — you paste it each time.</p>
+  <label for="token">Admin password</label>
+  <input
+    type="password"
+    id="token"
+    name="token"
+    autocomplete="off"
+    required
+  >
 
-        <label for="sender">Sender email (verified in Brevo)</label>
-        <input type="email" id="sender" name="sender" placeholder="you@gmail.com" autocomplete="off" required>
-        <p class="hint">Must be a sender you've verified in Brevo →
-          <a href="https://app.brevo.com/senders/list" target="_blank" rel="noopener">Senders</a>.
-          This becomes the “From” address.</p>
-      </fieldset>
+  <label for="to">Send to</label>
+  <input
+    type="email"
+    id="to"
+    name="to"
+    placeholder="recipient@example.com"
+    required
+  >
 
-      <label for="to">Send to</label>
-      <input type="email" id="to" name="to" placeholder="recipient@example.com" required>
+  <label for="subject">Subject</label>
+  <input
+    type="text"
+    id="subject"
+    name="subject"
+    required
+  >
 
-      <label for="subject">Subject</label>
-      <input type="text" id="subject" name="subject" required>
+  <label for="fromname">From name (optional)</label>
+  <input
+    type="text"
+    id="fromname"
+    name="fromname"
+    placeholder="ADIC"
+  >
 
-      <label for="fromname">From name (optional)</label>
-      <input type="text" id="fromname" name="fromname" placeholder="ADIC">
+  <label for="template">HTML template file (.html)</label>
+  <input
+    type="file"
+    id="template"
+    name="template"
+    accept=".html,.htm"
+    required
+  >
 
-      <label for="template">HTML template file (.html)</label>
-      <input type="file" id="template" name="template" accept=".html,.htm" required>
+  <button type="submit" id="send">
+    Send email
+  </button>
 
-      <button type="submit" id="send">Send email</button>
-    </form>
+</form>
 
-    <div id="msg"></div>
-  </div>
+<div id="msg"></div>
 
-  <script>
-    const form = document.getElementById('f');
-    const btn  = document.getElementById('send');
-    const msg  = document.getElementById('msg');
-    const senderField = document.getElementById('sender');
+<script>
+  const form = document.getElementById('f');
+  const btn  = document.getElementById('send');
+  const msg  = document.getElementById('msg');
 
-    // Remember only the sender address on this device (never the API key).
-    try { const s = localStorage.getItem('adic_mailer_sender'); if (s) senderField.value = s; } catch (e) {}
+  form.addEventListener('submit', async (e) => {
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      msg.className = ''; msg.textContent = '';
-      btn.disabled = true; btn.textContent = 'Sending…';
-      try { localStorage.setItem('adic_mailer_sender', senderField.value.trim()); } catch (e) {}
-      try {
-        const res = await fetch('mailer.php', { method: 'POST', body: new FormData(form) });
-        const data = await res.json().catch(() => ({ ok: false, error: 'Bad server response.' }));
-        if (data.ok) {
-          msg.className = 'ok';
-          msg.textContent = '✓ Sent to ' + data.to + (data.messageId ? '\nBrevo id: ' + data.messageId : '');
-          document.getElementById('template').value = '';
-        } else {
-          msg.className = 'err';
-          msg.textContent = '✗ ' + (data.error || 'Failed to send.');
-        }
-      } catch (err) {
+    e.preventDefault();
+
+    msg.className = '';
+    msg.textContent = '';
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+
+      const res = await fetch('/mailer.php', {
+        method: 'POST',
+        body: new FormData(form)
+      });
+
+      const data = await res.json().catch(() => ({
+        ok: false,
+        error: 'Bad server response.'
+      }));
+
+      if (data.ok) {
+
+        msg.className = 'ok';
+
+        msg.textContent =
+          '✓ Sent to ' +
+          data.to +
+          (data.messageId
+            ? '\nBrevo id: ' + data.messageId
+            : '');
+
+        document.getElementById('template').value = '';
+
+      } else {
+
         msg.className = 'err';
-        msg.textContent = '✗ Network error: ' + err.message;
-      } finally {
-        btn.disabled = false; btn.textContent = 'Send email';
+
+        msg.textContent =
+          '✗ ' + (data.error || 'Failed to send.');
+
       }
-    });
-  </script>
+
+    } catch (err) {
+
+      msg.className = 'err';
+
+      msg.textContent =
+        '✗ Network error: ' + err.message;
+
+    } finally {
+
+      btn.disabled = false;
+      btn.textContent = 'Send email';
+
+    }
+
+  });
+</script>
 </body>
 </html>

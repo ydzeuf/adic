@@ -94,3 +94,137 @@ jobs:
           # check passing. Our .htaccess makes index.html the homepage, so the
           # static site is what visitors see; WordPress just sits unused beneath.
           cleanup_deleted_files: "no"
+
+      - name: Install private mailer configuration
+        env:
+          SSH_HOST: "1176735.us17.ssh.myftpupload.com"
+          SSH_USER: "git_deployer_7ed4fc4a31_1176735"
+
+          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_SENDER_EMAIL: ${{ secrets.BREVO_SENDER_EMAIL }}
+          ADIC_INSTRUCTOR_EMAIL: ${{ secrets.ADIC_INSTRUCTOR_EMAIL }}
+
+        run: |
+          set -euo pipefail
+
+          echo "Preparing private mail configuration..."
+
+          KEY="$RUNNER_TEMP/godaddy_key"
+          CONFIG="$RUNNER_TEMP/.adic-mailer-secrets.php"
+          KNOWN_HOSTS="$RUNNER_TEMP/known_hosts"
+
+          # ---------------------------------------------------------
+          # Prepare SSH key
+          # ---------------------------------------------------------
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$KEY"
+          chmod 600 "$KEY"
+
+
+          # ---------------------------------------------------------
+          # Trust current GoDaddy SSH host
+          # ---------------------------------------------------------
+
+          ssh-keyscan \
+            -T 10 \
+            -H "$SSH_HOST" \
+            > "$KNOWN_HOSTS"
+
+
+          # ---------------------------------------------------------
+          # Build the PHP config WITHOUT printing secrets
+          # ---------------------------------------------------------
+
+          python3 <<'PY'
+          import os
+          from pathlib import Path
+
+          def php_string(value):
+              value = value.replace("\\", "\\\\")
+              value = value.replace("'", "\\'")
+              value = value.replace("\r", "\\r")
+              value = value.replace("\n", "\\n")
+              return "'" + value + "'"
+
+          api_key = os.environ["BREVO_API_KEY"]
+          sender = os.environ["BREVO_SENDER_EMAIL"]
+          instructor = os.environ["ADIC_INSTRUCTOR_EMAIL"]
+
+          content = """<?php
+
+          return [
+              'brevo_api_key'    => %s,
+              'sender_email'     => %s,
+              'instructor_email' => %s
+          ];
+          """ % (
+              php_string(api_key),
+              php_string(sender),
+              php_string(instructor)
+          )
+
+          Path(
+              os.environ["RUNNER_TEMP"] + "/.adic-mailer-secrets.php"
+          ).write_text(
+              content,
+              encoding="utf-8"
+          )
+          PY
+
+
+          # ---------------------------------------------------------
+          # Upload PRIVATE config directly to GoDaddy
+          # ---------------------------------------------------------
+
+          scp \
+            -i "$KEY" \
+            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+            -o StrictHostKeyChecking=yes \
+            "$CONFIG" \
+            "$SSH_USER@$SSH_HOST:/html/.adic-mailer-secrets.php"
+
+
+          # ---------------------------------------------------------
+          # Secure + verify it
+          # ---------------------------------------------------------
+
+          ssh \
+            -i "$KEY" \
+            -o UserKnownHostsFile="$KNOWN_HOSTS" \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            '
+              chmod 600 /html/.adic-mailer-secrets.php
+
+              echo "Checking private mail configuration..."
+
+              php -l /html/.adic-mailer-secrets.php
+
+              php -r '\''
+                $c = require "/html/.adic-mailer-secrets.php";
+
+                echo !empty($c["brevo_api_key"])
+                    ? "Brevo API key: OK\n"
+                    : "Brevo API key: MISSING\n";
+
+                echo !empty($c["sender_email"])
+                    ? "Sender email: OK\n"
+                    : "Sender email: MISSING\n";
+
+                echo !empty($c["instructor_email"])
+                    ? "Instructor email: OK\n"
+                    : "Instructor email: MISSING\n";
+              '\''
+            '
+
+
+          # ---------------------------------------------------------
+          # Remove temporary copies from GitHub runner
+          # ---------------------------------------------------------
+
+          rm -f "$KEY"
+          rm -f "$CONFIG"
+
+          echo "Private mailer configuration installed successfully."
