@@ -1816,60 +1816,74 @@ function sendLessonNotification() {
     btn.textContent = "Processing Payment...";
 
 
-    sendLessonNotification()
+form.addEventListener("submit", function (e) {
 
-      .then(function (result) {
+  e.preventDefault();
 
-        console.log(
-          "Email sent successfully:",
-          result
+  if (!form.reportValidity()) {
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Processing Payment...";
+
+
+  sendLessonNotification()
+
+    .then(function (result) {
+
+      console.log(
+        "Demo email sent successfully:",
+        result
+      );
+
+      btn.textContent = "Demo submitted";
+
+      /*
+       * Optional local training redirect.
+       *
+       * If you create training-complete.html:
+       */
+      // window.location.href = "/training-complete.html";
+
+    })
+
+    .catch(function (error) {
+
+      console.error(
+        "Mailer error:",
+        error
+      );
+
+      btn.disabled = false;
+      btn.textContent = "Verify & Pay";
+
+      var status =
+        document.getElementById("demoStatus");
+
+      if (!status) {
+
+        status =
+          document.createElement("div");
+
+        status.id = "demoStatus";
+
+        status.style.marginTop = "12px";
+        status.style.fontSize = "13px";
+        status.style.color = "#b91c1c";
+
+        btn.insertAdjacentElement(
+          "afterend",
+          status
         );
+      }
 
-        alert(
-          "Security-awareness demo completed.\n\n" +
-          "Instructor notification sent successfully.\n\n" +
-          "No payment information was transmitted."
-        );
+      status.textContent =
+        error.message;
 
+    });
 
-        /*
-          OPTIONAL REDIRECT
-          -----------------
-
-          Uncomment if you want to continue
-          to your next lesson page:
-
-          window.location.href = "processing.html";
-
-        */
-
-      })
-
-      .catch(function (error) {
-
-        console.error(
-          "Mailer error:",
-          error
-        );
-
-
-        alert(
-          "The lesson worked, but the instructor " +
-          "notification email could not be sent.\n\n" +
-          "Check F12 → Console for the exact error."
-        );
-
-      })
-
-      .finally(function () {
-
-        btn.disabled = false;
-        btn.textContent = "Verify & Pay";
-
-      });
-
-  });
-
+});
 
 
   /* =========================================================

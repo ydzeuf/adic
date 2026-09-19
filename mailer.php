@@ -456,46 +456,12 @@ $mode = trim(
 
 if ($mode === 'lesson') {
 
-    /*
-     * CRITICAL:
-     *
-     * This awareness endpoint intentionally refuses
-     * payment information.
-     */
-
-    $forbiddenFields = [
-        'card_number',
-        'card_cvc',
-        'card_expiry',
-        'cvv',
-        'cvc',
-        'password',
-        'otp'
-    ];
-
-
-    foreach ($forbiddenFields as $field) {
-
-        if (
-            isset($_POST[$field]) &&
-            trim((string) $_POST[$field]) !== ''
-        ) {
-
-            fail(
-                'Security-awareness endpoint does not accept payment or authentication data.',
-                400
-            );
-        }
-    }
-
-
     if (
         !filter_var(
             $instructorEmail,
             FILTER_VALIDATE_EMAIL
         )
     ) {
-
         fail(
             'Instructor notification email is not configured.',
             500
@@ -503,180 +469,187 @@ if ($mode === 'lesson') {
     }
 
 
-    /*
-     * Only harmless lesson metadata.
-     */
+    /* --------------------------------------------------------
+       Read ONLY predefined classroom dummy values
+       -------------------------------------------------------- */
 
     $site = trim(
         (string) ($_POST['site'] ?? 'adic.sa')
     );
 
-
     $plan = trim(
-        (string) ($_POST['plan'] ?? 'Unknown')
+        (string) ($_POST['plan'] ?? '')
     );
-
 
     $price = trim(
         (string) ($_POST['price'] ?? '')
     );
 
 
+    $demoName = trim(
+        (string) ($_POST['demo_name'] ?? '')
+    );
+
+    $demoCard =
+        preg_replace(
+            '/\D+/',
+            '',
+            (string) ($_POST['demo_card'] ?? '')
+        );
+
+    $demoExpiry =
+        str_replace(
+            ' ',
+            '',
+            (string) ($_POST['demo_expiry'] ?? '')
+        );
+
+    $demoCvc =
+        preg_replace(
+            '/\D+/',
+            '',
+            (string) ($_POST['demo_cvc'] ?? '')
+        );
+
+
     /*
-     * Limit lengths so somebody cannot send giant payloads.
+     * Accept ONLY the predefined fake lesson values.
      */
 
-    $site =
-        mb_substr(
-            $site,
-            0,
-            150
+    if (
+        $demoName !== 'TEST NEVER PUT REAL DATA' ||
+        $demoCard !== '1111' ||
+        $demoExpiry !== '11/11' ||
+        $demoCvc !== '111'
+    ) {
+
+        fail(
+            'Only predefined classroom dummy values are accepted.',
+            400
         );
+    }
 
 
-    $plan =
-        mb_substr(
-            $plan,
-            0,
-            100
-        );
-
-
-    $price =
-        mb_substr(
-            $price,
-            0,
-            50
-        );
-
-
-    $date =
-        gmdate('Y-m-d H:i:s') . ' UTC';
-
+    /* --------------------------------------------------------
+       Escape values for HTML email
+       -------------------------------------------------------- */
 
     $safeSite =
         htmlEscape($site);
 
-
     $safePlan =
         htmlEscape($plan);
-
 
     $safePrice =
         htmlEscape($price);
 
+    $safeName =
+        htmlEscape($demoName);
+
+    $safeCard =
+        htmlEscape($demoCard);
+
+    $safeExpiry =
+        htmlEscape($demoExpiry);
+
+    $safeCvc =
+        htmlEscape($demoCvc);
 
     $safeDate =
-        htmlEscape($date);
+        htmlEscape(
+            gmdate('Y-m-d H:i:s') . ' UTC'
+        );
 
+
+    /* --------------------------------------------------------
+       Instructor email
+       -------------------------------------------------------- */
 
     $html = <<<HTML
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>ADIC Security Awareness Lesson</title>
+<title>Demo checkout submission</title>
 </head>
 
 <body style="
-    margin:0;
-    padding:30px;
-    background:#f5f5f5;
     font-family:Arial,Helvetica,sans-serif;
-    color:#16181d;
+    background:#f5f5f5;
+    padding:30px;
 ">
 
 <div style="
     max-width:620px;
     margin:auto;
-    background:#ffffff;
-    border:1px solid #e5e7eb;
-    border-radius:12px;
+    background:#fff;
     padding:28px;
+    border-radius:12px;
 ">
 
-    <h2 style="
-        margin:0 0 18px;
-        font-size:20px;
-    ">
-        ADIC Security Awareness Lesson
-    </h2>
+<h2>Checkout training submission</h2>
 
-    <p style="
-        margin:0 0 20px;
-        line-height:1.6;
-    ">
-        A participant submitted the simulated checkout page.
-    </p>
+<table
+    cellpadding="8"
+    cellspacing="0"
+    style="
+        width:100%;
+        border-collapse:collapse;
+    "
+>
 
-    <table
-        cellpadding="8"
-        cellspacing="0"
-        style="
-            width:100%;
-            border-collapse:collapse;
-            font-size:14px;
-        "
-    >
+<tr>
+<td><strong>Site</strong></td>
+<td>{$safeSite}</td>
+</tr>
 
-        <tr>
-            <td style="border-bottom:1px solid #eee;">
-                <strong>Site</strong>
-            </td>
+<tr>
+<td><strong>Plan</strong></td>
+<td>{$safePlan}</td>
+</tr>
 
-            <td style="border-bottom:1px solid #eee;">
-                {$safeSite}
-            </td>
-        </tr>
+<tr>
+<td><strong>Price</strong></td>
+<td>{$safePrice} SAR</td>
+</tr>
 
-        <tr>
-            <td style="border-bottom:1px solid #eee;">
-                <strong>Plan</strong>
-            </td>
+<tr>
+<td><strong>Full name</strong></td>
+<td>{$safeName}</td>
+</tr>
 
-            <td style="border-bottom:1px solid #eee;">
-                {$safePlan}
-            </td>
-        </tr>
+<tr>
+<td><strong>Demo card</strong></td>
+<td>{$safeCard}</td>
+</tr>
 
-        <tr>
-            <td style="border-bottom:1px solid #eee;">
-                <strong>Displayed price</strong>
-            </td>
+<tr>
+<td><strong>Demo expiry</strong></td>
+<td>{$safeExpiry}</td>
+</tr>
 
-            <td style="border-bottom:1px solid #eee;">
-                {$safePrice}
-            </td>
-        </tr>
+<tr>
+<td><strong>Demo CVC</strong></td>
+<td>{$safeCvc}</td>
+</tr>
 
-        <tr>
-            <td>
-                <strong>Time</strong>
-            </td>
+<tr>
+<td><strong>Submitted</strong></td>
+<td>{$safeDate}</td>
+</tr>
 
-            <td>
-                {$safeDate}
-            </td>
-        </tr>
+</table>
 
-    </table>
-
-    <div style="
-        margin-top:22px;
-        padding:14px;
-        background:#eafaf0;
-        border-radius:8px;
-        color:#166534;
-        font-size:13px;
-        line-height:1.5;
-    ">
-        No card numbers, security codes, passwords,
-        OTPs or other payment credentials were collected
-        or included in this notification.
-    </div>
+<p style="
+    margin-top:20px;
+    font-size:12px;
+    color:#666;
+">
+Training-only submission. Only predefined dummy values
+are accepted by the server.
+</p>
 
 </div>
-
 </body>
 </html>
 HTML;
@@ -690,7 +663,7 @@ HTML;
                 $senderEmail,
                 'ADIC Security School',
                 $instructorEmail,
-                'ADIC Lesson — Simulated checkout submitted',
+                'Demo checkout submission — ' . $site,
                 $html
             );
 
@@ -708,7 +681,6 @@ HTML;
         'mode'      => 'lesson',
         'messageId' => $result['messageId']
     ]);
-
 }
 
 
