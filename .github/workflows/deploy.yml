@@ -1,96 +1,227 @@
 name: Deploy ADIC site to GoDaddy
 
-# Auto-deploy on every push to main; also runnable manually from the Actions tab.
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
   workflow_dispatch:
-    inputs:
-      deployment_dest:
-        description: 'Target server directory, leave blank for root directory'
-        required: false
-        default: ''
+
+concurrency:
+  group: adic-production-deploy
+  cancel-in-progress: false
+
 
 jobs:
+
   deploy:
+
     runs-on: ubuntu-latest
+
+    env:
+      GODADDY_HOST: 1176735.us17.ssh.myftpupload.com
+      GODADDY_USER: git_deployer_7ed4fc4a31_1176735
+      GODADDY_ROOT: /html
+
+
     steps:
-      - name: Checkout Repository Code
+
+      # ============================================================
+      # CHECKOUT
+      # ============================================================
+
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # -----------------------------------------------------------------------
-      # PREFLIGHT — can this runner reach GoDaddy's SSH deploy endpoint at all?
-      #
-      # The GoDaddy deployer's very first sub-step runs `ssh-keyscan` under
-      # `bash -e`. When the host does not answer, that dies with a bare
-      # "Process completed with exit code 1" and no message (2026-09-15
-      # outage) — which looks like a config/key problem but is not: the
-      # runner simply cannot open a TCP connection to port 22.
-      # (Real cause on 2026-09-15: GoDaddy silently renamed the site's temporary
-      # SSH domain rp4.311.myftpupload.com -> 1176735.us17.ssh.myftpupload.com.
-      # The current hostname is shown in Hosting Settings -> SSH/SFTP; update
-      # HOST below AND remote_host in the deploy step together.)
-      #
-      # This step retries for ~2 minutes to absorb short blips, then, if the
-      # endpoint is still unreachable, FAILS FAST with a plain-English error
-      # and evidence (DNS, port 22 vs 443). Nothing in this repo or its
-      # secrets can fix that case: re-run the job later, or send this log to
-      # GoDaddy support.
-      # -----------------------------------------------------------------------
-      - name: Preflight — check GoDaddy SSH endpoint is reachable
-        env:
-          HOST: 1176735.us17.ssh.myftpupload.com
-        run: |
-          echo "DNS for $HOST:"
-          getent ahosts "$HOST" || echo "::warning::DNS lookup for $HOST failed on this runner"
 
-          # Gate with the SAME tool and timeout the deployer uses (ssh-keyscan,
-          # 5 s banner timeout). A healthy host prints its keys to stdout and
-          # exits 0; an unreachable or silent one prints nothing and exits 1.
+      # ============================================================
+      # PREPARE SSH
+      # ============================================================
+
+      - name: Prepare SSH connection
+        run: |
+          mkdir -p ~/.ssh
+
+          KEY="$RUNNER_TEMP/godaddy_key"
+
+          printf '%s\n' '${{ secrets.PRIVATE_KEY }}' > "$KEY"
+
+          chmod 600 "$KEY"
+
+          echo "KEY=$KEY" >> "$GITHUB_ENV"
+
+
+          echo "Checking GoDaddy SSH endpoint..."
+
+          SUCCESS=0
+
           for i in 1 2 3 4; do
-            if ssh-keyscan -T 5 -H "$HOST" > "$RUNNER_TEMP/hk" 2> "$RUNNER_TEMP/hk.err" && [ -s "$RUNNER_TEMP/hk" ]; then
-              echo "OK: got SSH host key from $HOST:22 (attempt $i) — proceeding to deploy."
-              exit 0
+
+            echo "SSH check attempt $i/4..."
+
+            if ssh-keyscan -T 8 -H "$GODADDY_HOST" \
+              >> ~/.ssh/known_hosts 2>/dev/null; then
+
+              echo "GoDaddy SSH endpoint responded."
+              SUCCESS=1
+              break
+
             fi
-            echo "attempt $i/4: no SSH host key from $HOST:22"
-            cat "$RUNNER_TEMP/hk.err" 2>/dev/null || true
-            if [ "$i" -lt 4 ]; then sleep 30; fi
+
+            if [ "$i" -lt 4 ]; then
+              sleep 15
+            fi
+
           done
 
-          # --- Explain the failure (informational). Keep `exec` as the ONLY
-          #     command inside each bash -c string: its status IS the probe result.
-          tcp() { timeout -k 5 15 bash -c "exec 3<>/dev/tcp/$1/$2" 2>/dev/null; }
-          echo "Diagnostics:"
-          if tcp "$HOST" 22; then
-            echo "  $HOST:22   TCP connect OK but no SSH banner within 5 s => gateway up, sshd behind it not answering"
-          else
-            echo "  $HOST:22   no TCP connect at all (filtered / dropped)"
-          fi
-          tcp "$HOST" 80  && echo "  $HOST:80   open" || echo "  $HOST:80   no answer"
-          tcp "$HOST" 443 && echo "  $HOST:443  open" || echo "  $HOST:443  no answer"
 
-          if tcp github.com 22; then
-            echo "  control github.com:22 reachable => this runner CAN do outbound SSH; the problem is specific to the GoDaddy endpoint."
-            echo "::error::GoDaddy SSH endpoint $HOST:22 is not answering from this GitHub runner (4 tries over ~2 min) while github.com:22 works. This is on GoDaddy's side (GoDaddy renamed the temporary SSH domain — check Hosting Settings → SSH/SFTP for the current hostname — or SSH switched OFF / sshd down / port 22 firewalled) — NOT a workflow, key or secret problem. Fix the hostname if it changed, re-run, or send this log to GoDaddy support."
-          else
-            echo "  control github.com:22 ALSO unreachable => this runner has no port-22 egress at all."
-            echo "::error::This GitHub runner cannot reach ANY SSH endpoint (github.com:22 failed too) — a GitHub Actions / runner network problem, not GoDaddy. Re-run the job."
-          fi
-          exit 1
+          if [ "$SUCCESS" -ne 1 ]; then
 
-      - name: Synchronize Files with GoDaddy WordPress Hosting Server
-        uses: godaddy-wordpress/gd-wordpress-deployer@v1
-        with:
-          remote_host: "1176735.us17.ssh.myftpupload.com"
-          ssh_user: "git_deployer_7ed4fc4a31_1176735"
-          ssh_private_key: ${{ secrets.PRIVATE_KEY }}
-          # blank = deploy the whole repo to the site root (httpdocs)
-          deployment_dest: ${{ github.event.inputs.deployment_dest }}
-          # Keep health check ON: with an empty (root) destDir, the action
-          # mis-parses "--skipHealthCheck" as the target dir and fails. Leaving
-          # it on avoids that bug.
-          enable_health_check: "yes"
-          # Do NOT delete the existing WordPress files — they keep the health
-          # check passing. Our .htaccess makes index.html the homepage, so the
-          # static site is what visitors see; WordPress just sits unused beneath.
-          cleanup_deleted_files: "no"
+            echo "::error::Could not obtain SSH host key from $GODADDY_HOST"
+
+            exit 1
+
+          fi
+
+
+      # ============================================================
+      # VERIFY SSH LOGIN
+      # ============================================================
+
+      - name: Verify SSH authentication
+        run: |
+          ssh \
+            -i "$KEY" \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$GODADDY_USER@$GODADDY_HOST" \
+            '
+              echo "SSH authentication successful"
+              echo "Current directory:"
+              pwd
+              echo "HTML root:"
+              ls -ld /html
+            '
+
+
+      # ============================================================
+      # PHP CHECKS
+      # ============================================================
+
+      - name: Validate PHP files
+        run: |
+          if command -v php >/dev/null 2>&1; then
+
+            find . \
+              -type f \
+              -name "*.php" \
+              -not -path "./.git/*" \
+              -print0 |
+            while IFS= read -r -d '' file; do
+
+              echo "Checking $file"
+
+              php -l "$file"
+
+            done
+
+          else
+
+            echo "PHP CLI unavailable on runner — skipping PHP lint."
+
+          fi
+
+
+      # ============================================================
+      # DEPLOY
+      # ============================================================
+
+      - name: Deploy files to GoDaddy
+        run: |
+
+          echo "Deploying repository to $GODADDY_ROOT ..."
+
+
+          rsync \
+            -azv \
+            --checksum \
+            --itemize-changes \
+            \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.claude/' \
+            --exclude='.idea/' \
+            --exclude='.vscode/' \
+            --exclude='node_modules/' \
+            --exclude='README' \
+            --exclude='README.md' \
+            --exclude='Thumbs.db' \
+            --exclude='.DS_Store' \
+            \
+            -e "ssh -i $KEY -o StrictHostKeyChecking=yes" \
+            \
+            ./ \
+            "$GODADDY_USER@$GODADDY_HOST:$GODADDY_ROOT/"
+
+
+          echo "Deployment completed."
+
+
+      # ============================================================
+      # VERIFY DEPLOYMENT
+      # ============================================================
+
+      - name: Verify deployed files
+        run: |
+
+          ssh \
+            -i "$KEY" \
+            -o StrictHostKeyChecking=yes \
+            "$GODADDY_USER@$GODADDY_HOST" \
+            '
+              set -e
+
+              echo "Checking production directory..."
+
+              cd /html
+
+              echo
+              echo "index.html:"
+              ls -lh index.html || true
+
+              echo
+              echo "mailer.php:"
+              ls -lh mailer.php || true
+
+              echo
+              echo "check-ip.php:"
+              ls -lh check-ip.php || true
+
+              echo
+              echo ".htaccess:"
+              ls -lh .htaccess || true
+
+              echo
+              echo "PHP syntax check:"
+
+              if [ -f /html/mailer.php ]; then
+                  php -l /html/mailer.php
+              fi
+
+              if [ -f /html/check-ip.php ]; then
+                  php -l /html/check-ip.php
+              fi
+
+              echo
+              echo "Production verification complete."
+            '
+
+
+      # ============================================================
+      # CLEAN LOCAL SSH KEY
+      # ============================================================
+
+      - name: Remove temporary SSH key
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/godaddy_key"
