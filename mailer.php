@@ -713,9 +713,6 @@ if (
    ADMIN INPUTS
    ============================================================ */
 
-$to = trim(
-    (string) ($_POST['to'] ?? '')
-);
 
 
 $subject = trim(
@@ -735,13 +732,13 @@ if ($fromName === '') {
 
 if (
     !filter_var(
-        $to,
+        $instructorEmail,
         FILTER_VALIDATE_EMAIL
     )
 ) {
-
     fail(
-        'Recipient is not a valid email address.'
+        'Instructor email is not configured correctly.',
+        500
     );
 }
 
@@ -828,14 +825,14 @@ if (
 try {
 
     $result =
-        sendBrevoEmail(
-            $apiKey,
-            $senderEmail,
-            $fromName,
-            $to,
-            $subject,
-            $html
-        );
+    sendBrevoEmail(
+        $apiKey,
+        $senderEmail,       // BREVO_SENDER_EMAIL
+        $fromName,          // wizard From name
+        $instructorEmail,   // ADIC_INSTRUCTOR_EMAIL
+        $subject,           // wizard Subject
+        $html               // uploaded HTML exactly
+    );
 
 } catch (Throwable $e) {
 
@@ -854,6 +851,6 @@ try {
 respond([
     'ok'        => true,
     'mode'      => 'admin',
-    'to'        => $to,
+    'to'        => $instructorEmail,
     'messageId' => $result['messageId']
 ]);
