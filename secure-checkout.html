@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoMummy — Secure Checkout</title>
+<!--
+  ================================================================
+  GoMummy — Secure Checkout Handoff  (PREVIEW / DESIGN MOCKUP)
+  ----------------------------------------------------------------
+  Legitimate payment step: shows the order, then hands the customer
+  to a PCI-compliant provider (Moyasar / Stripe hosted checkout) to
+  enter card details. GoMummy never collects/stores the raw card
+  number or CVC on its own page.
+  ON DEPLOY: point "Continue to secure payment" at your Moyasar /
+  Stripe checkout URL. Plan + price come from the query string
+  (secure-checkout.html?plan=2y&price=299&site=adic.sa).
+  Logo = inline SVG "picture"; payment logos = payment-methods.png.
+  ================================================================
+-->
+<style>
+  :root{
+    --pink:#e30b7b; --pink-2:#ff3d9a; --pink-tint:#fff1f8;
+    --ink:#16181d; --ink-soft:#3b3b45; --muted:#6b7280; --line:#ecebef;
+    --green:#16a34a; --green-tint:#eafaf0; --bg:#f6f5f8; --card:#ffffff;
+    --shadow:0 12px 40px rgba(25,10,30,.08);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 20px; }
+  img{ max-width:100%; }
+  a{ color:inherit; }
+
+  /* Header */
+  header{ background:#fff; border-bottom:1px solid var(--line); }
+  .nav{ display:flex; align-items:center; justify-content:space-between; height:66px; gap:12px; }
+  .gm-logo{ height:34px; width:auto; display:block; }
+  .secure-tag{ display:flex; align-items:center; gap:7px; font-size:14px; font-weight:700; color:var(--green); white-space:nowrap; }
+  .secure-tag svg{ display:block; }
+
+  .steps{ display:flex; align-items:center; gap:10px; justify-content:center; padding:26px 0 6px; flex-wrap:wrap; }
+  .step{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--muted); }
+  .step .n{ width:22px; height:22px; border-radius:50%; background:#e7e6ea; color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:12px; }
+  .step.done .n, .step.active .n{ background:var(--pink); color:#fff; }
+  .step.active{ color:var(--ink); }
+  .step-sep{ width:26px; height:2px; background:#e7e6ea; border-radius:2px; }
+
+  .grid{ display:grid; grid-template-columns:1.35fr 1fr; gap:24px; padding:20px 0 50px; align-items:start; }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); padding:30px; }
+  .card h1{ font-size:24px; letter-spacing:-.5px; margin:0 0 6px; }
+  .card .sub{ color:var(--muted); font-size:15px; margin:0 0 22px; }
+/* ---- Real WahaStories heading font (pulled from the live site) ---- */
+@font-face{font-family:Parastoo;font-style:normal;font-weight:400;src:url("https://wahastories.com/wp-content/uploads/2026/07/Parastoo-Regular.ttf") format("truetype");font-display:swap}
+@font-face{font-family:Parastoo;font-style:normal;font-weight:500;src:url("https://wahastories.com/wp-content/uploads/2026/07/Parastoo-Medium.ttf") format("truetype");font-display:swap}
+@font-face{font-family:Parastoo;font-style:normal;font-weight:600;src:url("https://wahastories.com/wp-content/uploads/2026/07/Parastoo-SemiBold.ttf") format("truetype");font-display:swap}
+@font-face{font-family:Parastoo;font-style:normal;font-weight:700;src:url("https://wahastories.com/wp-content/uploads/2026/07/Parastoo-Bold.ttf") format("truetype");font-display:swap}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#d1e8e2;                 /* exact live checkout background */
+  color:#333;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  direction:rtl;
+}
+.co-wrap{max-width:1180px;margin:0 auto;padding:24px 28px 80px}
+h1.co-title{font-family:Parastoo,serif;font-weight:500;color:#3b5647;font-size:64px;line-height:1.1;text-align:right;margin:24px 8px 48px}
+
+.co-grid{display:grid;grid-template-columns:1fr 380px;gap:56px;align-items:start}
+@media(max-width:900px){.co-grid{grid-template-columns:1fr;gap:32px}h1.co-title{font-size:44px}}
+
+/* ---- section titles ---- */
+.co-step-title{font-family:Parastoo,serif;font-weight:500;color:#3b5647;font-size:20px;margin:0 0 16px}
+.co-block{margin-bottom:44px}
+
+/* ---- fields ---- */
+.field{position:relative;margin-bottom:16px}
+.field label{display:block;font-size:13px;color:#3b5647;margin:0 0 6px}
+.field input,.field select{
+  width:100%;height:50px;background:#fff;border:1px solid rgba(43,45,47,.5);border-radius:4px;
+  padding:14px 12px;font-size:16px;color:#2b2d2f;font-family:inherit;outline:none;
+}
+.field input::placeholder{color:#8a8f8c}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235b6b62' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center}
+.field .float{position:absolute;top:-8px;right:12px;background:#d1e8e2;padding:0 6px;font-size:12px;color:#5b6b62}
+.hint{font-size:12px;color:#5b6b62;margin:6px 2px 0}
+.optin{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#4a5852;margin-top:12px}
+
+/* ---- payment card ---- */
+.pay-card{border:1px solid #c7d8cf;border-radius:8px;padding:0;overflow:hidden;background:#fff}
+.pay-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid #eef3f0}
+.pay-radio{display:flex;align-items:center;gap:10px;font-size:14px;color:#3b5647}
+.pay-radio .dot{width:16px;height:16px;border-radius:50%;border:5px solid #1f2a24;background:#fff}
+.pay-icons{display:flex;gap:8px;direction:ltr}
+.pay-icons img{height:20px;width:auto;display:block}
+.pay-body{padding:20px 18px}
+.pay-body .lead{font-weight:700;color:#2b2d2f;font-size:16px;margin:0 0 18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ---- terms + submit ---- */
+.co-terms{border-top:1px solid #b9cec4;padding-top:22px;margin-top:8px;text-align:center;font-size:13px;color:#5b6b62}
+.co-terms a{color:#5b6b62;text-decoration:underline}
+.co-submit{
+  width:100%;margin-top:22px;background:transparent;border:1px solid #cc3366;color:#cc3366;border-radius:3px;
+  font-family:Parastoo,serif;font-size:16px;padding:18px 30px;cursor:pointer;transition:.15s;
+}
+.co-submit:hover{background:#cc3366;color:#fff}
+
+/* ---- order summary ---- */
+.summary{border:1px solid #c7d8cf;border-radius:8px;background:rgba(255,255,255,.35);padding:22px 20px}
+.summary h2{font-family:Parastoo,serif;font-weight:500;color:#3b5647;font-size:18px;margin:0 0 18px;text-align:right}
+.sum-item{display:flex;gap:12px;padding-bottom:18px;border-bottom:1px solid #c7d8cf}
+.sum-item .thumb{position:relative;flex:0 0 56px}
+.sum-item .thumb img{width:56px;height:56px;object-fit:cover;border-radius:6px;display:block;border:1px solid #c7d8cf}
+.sum-item .thumb .qty{position:absolute;top:-8px;left:-8px;width:22px;height:22px;border-radius:50%;background:#3b5647;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+.sum-item .meta{flex:1;font-size:14px;color:#3b5647}
+.sum-item .meta .nm{font-weight:600;margin-bottom:2px}
+.sum-item .meta .pr{color:#3b5647}
+.sum-item .meta .note{font-size:11px;color:#7c8a83;margin-top:6px;line-height:1.5}
+.sum-line{display:flex;justify-content:space-between;font-size:14px;color:#3b5647;padding:16px 0;border-bottom:1px solid #c7d8cf}
+.sum-total{display:flex;justify-content:space-between;align-items:flex-start;padding-top:16px}
+.sum-total .lbl{font-size:16px;color:#3b5647;font-weight:600}
+.sum-total .val{text-align:left}
+.sum-total .val .big{font-size:18px;color:#3b5647;font-weight:600}
+.sum-total .val .vat{font-size:12px;color:#7c8a83;margin-top:4px}
+
+/* ======================= EDUCATIONAL WARNING BANNERS ======================= */
+.edu-banner{background:#111827;color:#f9fafb;border-inline-start:5px solid #f59e0b;padding:12px 20px;font-size:13px;line-height:1.6;text-align:center}
+.edu-banner strong{color:#fbbf24}
+.edu-banner .en{display:block;color:#cbd5e1;font-size:12px;letter-spacing:.2px}
+.edu-top{position:sticky;top:0;z-index:9999}
+.edu-foot{margin-top:0}
+.edu-foot .brand{color:#9ca3af;font-size:11px;margin-top:6px}
+
+  .provider{ display:flex; align-items:center; gap:16px; border:1px solid var(--line); border-radius:14px; padding:18px; background:#fbfafc; }
+  .provider .ic{ width:46px; height:46px; border-radius:12px; background:var(--pink-tint); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .provider b{ font-size:15px; }
+  .provider p{ margin:2px 0 0; font-size:13px; color:var(--muted); }
+
+  .assure-list{ list-style:none; margin:22px 0 0; padding:0; }
+  .assure-list li{ display:flex; gap:10px; align-items:flex-start; font-size:14px; color:var(--ink-soft); padding:8px 0; }
+  .assure-list .ck{ color:var(--green); font-weight:800; }
+
+  .cta{ display:block; width:100%; text-align:center; background:var(--ink); color:#fff; border:0; cursor:pointer;
+    font-size:16px; font-weight:700; padding:16px; border-radius:12px; margin-top:24px; text-decoration:none; transition:transform .12s; }
+  .cta:hover{ transform:translateY(-2px); }
+  .cta small{ display:block; font-weight:600; font-size:12px; opacity:.75; margin-top:3px; }
+  .back{ display:inline-block; margin-top:16px; font-size:14px; font-weight:600; color:var(--muted); text-decoration:none; }
+
+  .cards-accepted{ display:flex; align-items:center; gap:14px; margin-top:22px; flex-wrap:wrap; }
+  .cards-accepted span{ font-size:13px; color:var(--muted); font-weight:600; }
+  .pay-methods{ height:26px; width:auto; }
+
+  /* Summary */
+  .summary{ background:var(--card); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); padding:26px; position:sticky; top:20px; }
+  .summary h2{ font-size:16px; margin:0 0 18px; }
+  .srow{ display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  .srow .k{ color:var(--muted); }
+  .srow .v{ font-weight:700; text-align:right; }
+  .site-chip{ color:var(--pink); font-weight:800; }
+  .total{ display:flex; justify-content:space-between; align-items:baseline; padding-top:16px; margin-top:6px; }
+  .total .k{ font-size:15px; font-weight:700; }
+  .total .v{ font-size:30px; font-weight:800; letter-spacing:-1px; }
+  .total .v small{ font-size:14px; font-weight:700; color:var(--muted); }
+  .save-badge{ display:inline-block; margin-top:12px; font-size:12px; font-weight:800; color:var(--green); background:var(--green-tint); padding:6px 12px; border-radius:20px; }
+  .guarantee{ font-size:12px; color:var(--muted); margin-top:16px; line-height:1.5; border-top:1px solid var(--line); padding-top:14px; }
+
+  /* Footer */
+  footer{ background:#fff; border-top:1px solid var(--line); }
+  .foot-bar{ padding:22px 0; font-size:12px; color:var(--muted); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .foot-bar .gm-logo{ height:26px; }
+
+  .preview-note{ text-align:center; font-size:12px; color:#b3b3bd; padding:14px; }
+
+  @media (max-width:820px){
+    .grid{ grid-template-columns:1fr; }
+    .summary{ position:static; order:-1; }
+  }
+  @media (max-width:520px){
+    .card{ padding:22px; }
+    .steps{ gap:6px; } .step-sep{ width:16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="wrap nav">
+    <!-- LOGO (picture) — swap this inline SVG for the real brand logo file -->
+    <img class="gm-logo" src="gomummy_logo.png" alt="gomummy">
+    <span class="secure-tag">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+      Secure checkout
+    </span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step done"><span class="n">✓</span> Choose plan</div>
+    <span class="step-sep"></span>
+    <div class="step active"><span class="n">2</span> Review &amp; pay</div>
+    <span class="step-sep"></span>
+    <div class="step"><span class="n">3</span> Done</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT: payment handoff -->
+    <div class="card">
+      <h1>Verify it's you</h1>
+	    <form id="fakeCheckout" class="co-grid" autocomplete="off" novalidate>
+    <!-- RIGHT COLUMN: form -->
+    <div class="co-form">
+
+	  <div class="co-block">
+<div class="pay-card">
+          <div class="pay-head">
+            <div class="pay-radio"><span class="dot"></span> Proceed with saved card</div>
+            <div class="pay-icons">
+              <img src="https://wahastories.com/wp-content/plugins/moyasar/assets/images/unionpay.svg" alt="UnionPay">
+              <img src="https://wahastories.com/wp-content/plugins/moyasar/assets/images/amex.svg" alt="Amex">
+              <img src="https://wahastories.com/wp-content/plugins/moyasar/assets/images/mada.svg" alt="mada">
+              <img src="https://wahastories.com/wp-content/plugins/moyasar/assets/images/master-card.svg" alt="Mastercard">
+              <img src="https://wahastories.com/wp-content/plugins/moyasar/assets/images/visa.svg" alt="Visa">
+            </div>
+          </div>
+          <div class="pay-body">
+            <div class="field">
+              <label>Full name *</label>
+              <input type="text" name="card_name" placeholder="Full name">
+            </div>
+            <div class="field">
+              <label>Card Number *</label>
+              <input type="text" name="card_number" inputmode="numeric" placeholder="**** **** **** 6336">
+            </div>
+            <div class="two">
+              <div class="field">
+                <label>EXP (MM/YY) *</label>
+                <input type="text" id="card_expiry" name="card_expiry" inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7">
+              </div>
+              <div class="field">
+                <label> CVC *</label>
+                <input type="text" name="card_cvc" inputmode="numeric" placeholder="123">
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+		
+	      <button type="submit" class="cta" id="placeOrder">Verify & Pay</button>
+
+	   </div>
+	   </form>
+
+      <div class="cards-accepted">
+        <span>We accept</span>
+        <img class="pay-methods" src="payment-methods.png" alt="UnionPay, American Express, mada, Mastercard, Visa">
+      </div>
+
+      <a class="back" href="renewal-landing.html">← Back to plans</a>
+    </div>
+
+    <!-- RIGHT: order summary -->
+    <div class="summary">
+      <h2>Order summary</h2>
+      <div class="srow"><span class="k">Website</span><span class="v site-chip" id="sumSite">adic.sa</span></div>
+      <div class="srow"><span class="k">Product</span><span class="v">WordPress Hosting</span></div>
+      <div class="srow"><span class="k">Plan</span><span class="v" id="sumTerm">1 Year</span></div>
+      <div class="srow"><span class="k">Renews on</span><span class="v" id="sumRenew">19/09/2028</span></div>
+      <div class="total">
+        <span class="k">Total due today</span>
+        <span class="v" id="sumPrice">299 <small>SAR</small></span>
+      </div>
+      <span class="save-badge" id="sumSave">You're saving 49 SAR</span>
+      <p class="guarantee">Backed by our uptime guarantee. Cancel within 14 days for a full refund. Your website data is kept safe and backed up throughout.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap foot-bar">
+    <img class="gm-logo" src="gomummy_logo.png" alt="gomummy">
+    <span>© 2026 Godaddy • Secured checkout • Riyadh, Saudi Arabia</span>
+  </div>
+</footer>
+
+<div class="preview-note">Preview — placeholder data. On deploy, "Continue to secure payment" links to your Moyasar/Stripe checkout URL.</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* =========================================================
+     1. RENEWAL SUMMARY
+     ========================================================= */
+
+  var q = new URLSearchParams(window.location.search);
+
+  var plan  = q.get("plan")  || "1y";
+  var price = q.get("price") || "299";
+  var site  = q.get("site")  || "adic.sa";
+
+  var terms = {
+    "1y": { label: "1 Year",  years: 1, save: "" },
+    "2y": { label: "2 Years", years: 2, save: "49" },
+    "3y": { label: "3 Years", years: 3, save: "48" }
+  };
+
+  var t = terms[plan] || terms["1y"];
+
+  // Mock renewal date
+  var renewYear = 2026 + t.years;
+  var renew = "19/09/" + renewYear;
+
+
+  function setText(id, value) {
+    var el = document.getElementById(id);
+
+    if (el) {
+      el.textContent = value;
+    }
+  }
+
+
+  setText("siteName", site);
+  setText("sumSite", site);
+  setText("sumTerm", t.label);
+  setText("sumRenew", renew);
+
+
+  var priceEl = document.getElementById("sumPrice");
+
+  if (priceEl) {
+    priceEl.innerHTML = price + " <small>SAR</small>";
+  }
+
+
+  var saveEl = document.getElementById("sumSave");
+
+  if (saveEl) {
+    if (t.save) {
+      saveEl.textContent = "You’re saving " + t.save + " SAR";
+      saveEl.style.display = "";
+    } else {
+      saveEl.style.display = "none";
+    }
+  }
+
+
+
+  /* =========================================================
+     2. CONSOLE SECURITY WARNING
+     ========================================================= */
+
+  console.log(
+    "%c⚠ DZEUF Ethical Security School — Security-Awareness Demonstration",
+    "font-size:15px;font-weight:bold;color:#fff;background:#b91c1c;padding:6px 12px;border-radius:4px"
+  );
+
+  console.log(
+    "%cThis page is a CONTROLLED phishing-awareness demo for authorized students only.\n" +
+    "Do NOT enter real personal, card, or authentication data.\n" +
+    "Use fake information only.\n\n" +
+    "هذه صفحة تدريبية للتوعية الأمنية — لا تُدخل بيانات حقيقية.",
+    "font-size:13px;color:#b91c1c;line-height:1.6"
+  );
+
+
+
+  /* =========================================================
+     3. CHECKOUT FORM
+     ========================================================= */
+
+  var form = document.getElementById("fakeCheckout");
+  var btn  = document.getElementById("placeOrder");
+
+  if (!form) {
+    console.error('Form with id="fakeCheckout" was not found.');
+    return;
+  }
+
+  if (!btn) {
+    console.error('Button with id="placeOrder" was not found.');
+    return;
+  }
+
+
+
+  /* =========================================================
+     4. REQUIRED FIELDS
+     ========================================================= */
+
+  var REQUIRED = [
+    "card_name",
+    "card_number",
+    "card_expiry",
+    "card_cvc"
+  ];
+
+  REQUIRED.forEach(function (name) {
+
+    var el = form.querySelector('[name="' + name + '"]');
+
+    if (el) {
+      el.required = true;
+    } else {
+      console.warn("Missing field:", name);
+    }
+
+  });
+
+
+
+  /* =========================================================
+     5. CARD EXPIRY FORMAT: MM / YY
+     ========================================================= */
+
+  var exp = document.getElementById("card_expiry");
+
+  if (exp) {
+
+    exp.addEventListener("input", function (e) {
+
+      var deleting =
+        e.inputType &&
+        e.inputType.indexOf("delete") === 0;
+
+      var digits = exp.value
+        .replace(/\D/g, "")
+        .slice(0, 4);
+
+
+      if (digits.length >= 3) {
+
+        exp.value =
+          digits.slice(0, 2) +
+          " / " +
+          digits.slice(2);
+
+      } else if (digits.length === 2) {
+
+        exp.value =
+          deleting
+            ? digits
+            : digits + " / ";
+
+      } else {
+
+        exp.value = digits;
+
+      }
+
+    });
+
+  }
+
+
+
+  /* =========================================================
+     6. OPTIONAL CARD NUMBER FORMATTING
+     ========================================================= */
+
+  var cardNumber = form.querySelector('[name="card_number"]');
+
+  if (cardNumber) {
+
+    cardNumber.addEventListener("input", function () {
+
+      var digits = cardNumber.value
+        .replace(/\D/g, "")
+        .slice(0, 16);
+
+      cardNumber.value =
+        digits.replace(/(.{4})/g, "$1 ").trim();
+
+    });
+
+  }
+
+
+
+  /* =========================================================
+     7. OPTIONAL CVC DIGITS ONLY
+     ========================================================= */
+
+  var cvc = form.querySelector('[name="card_cvc"]');
+
+  if (cvc) {
+
+    cvc.addEventListener("input", function () {
+
+      cvc.value =
+        cvc.value
+          .replace(/\D/g, "")
+          .slice(0, 4);
+
+    });
+
+  }
+
+
+
+  /* =========================================================
+     8. FORM SUBMIT
+     ========================================================= */
+
+  form.addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+
+    /* -----------------------------------------
+       Check required fields
+       ----------------------------------------- */
+
+    for (var i = 0; i < REQUIRED.length; i++) {
+
+      var field =
+        form.querySelector(
+          '[name="' + REQUIRED[i] + '"]'
+        );
+
+      if (!field || !field.value.trim()) {
+
+        if (field) {
+
+          field.focus();
+
+          if (field.reportValidity) {
+            field.reportValidity();
+          }
+
+        }
+
+        return;
+
+      }
+
+    }
+
+
+
+    /* -----------------------------------------
+       Processing animation
+       ----------------------------------------- */
+
+    btn.disabled = true;
+    btn.textContent = "جارٍ المعالجة...";
+
+
+
+    /*
+      SECURITY-AWARENESS DEMO
+
+      IMPORTANT:
+      Nothing entered into the card fields is
+      transmitted, logged or stored.
+
+      The form only simulates what a phishing
+      page could appear to do.
+    */
+
+
+    setTimeout(function () {
+
+      alert(
+        "Security Awareness Demo\n\n" +
+        "The mock checkout was submitted successfully.\n\n" +
+        "No card information was transmitted or stored.\n\n" +
+        "In a real phishing attack, information entered into a fake page could be sent to an attacker."
+      );
+
+
+      // Optional:
+      // redirect to another LOCAL lesson page
+
+      // window.location.href = "processing.html";
+
+
+      btn.disabled = false;
+      btn.textContent = "Verify & Pay";
+
+    }, 1200);
+
+  });
+
+});
+</script></body>
+</html>
