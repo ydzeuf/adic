@@ -83,6 +83,7 @@ jobs:
           SSH_HOST: "1176735.us17.ssh.myftpupload.com"
           SSH_USER: "git_deployer_7ed4fc4a31_1176735"
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+
         run: |
           set -euo pipefail
 
@@ -94,14 +95,52 @@ jobs:
 
           ssh-keyscan -T 10 -H "$SSH_HOST" > "$KNOWN_HOSTS"
 
+          # ---------------------------------------------------------
+          # One SSH configuration used for BOTH ssh and rsync
+          # ---------------------------------------------------------
+
+          SSH_CMD="ssh -i $KEY \
+          -o UserKnownHostsFile=$KNOWN_HOSTS \
+          -o StrictHostKeyChecking=yes \
+          -o ConnectTimeout=15 \
+          -o ServerAliveInterval=10 \
+          -o ServerAliveCountMax=3"
+
           echo "Testing SSH command access..."
 
-          ssh \
-            -i "$KEY" \
-            -o UserKnownHostsFile="$KNOWN_HOSTS" \
-            -o StrictHostKeyChecking=yes \
-            "$SSH_USER@$SSH_HOST" \
-            'echo "SSH OK"; test -d /html; echo "/html OK"'
+          SSH_OK=0
+
+          for i in 1 2 3 4 5; do
+
+            echo "SSH login attempt $i/5..."
+
+            if $SSH_CMD \
+              "$SSH_USER@$SSH_HOST" \
+              'echo "SSH OK"; test -d /html && echo "/html OK"'
+            then
+
+              SSH_OK=1
+              break
+
+            fi
+
+            echo "SSH attempt $i failed."
+
+            if [ "$i" -lt 5 ]; then
+              echo "Waiting 30 seconds before retry..."
+              sleep 30
+            fi
+
+          done
+
+
+          if [ "$SSH_OK" -ne 1 ]; then
+
+            echo "::error::GoDaddy SSH repeatedly closed the authenticated session."
+            exit 1
+
+          fi
+
 
           echo "Deploying repository files..."
 
@@ -122,13 +161,14 @@ jobs:
             --exclude='.DS_Store' \
             --exclude='index.php' \
             --exclude='wp-content/' \
-            -e "ssh -i $KEY -o UserKnownHostsFile=$KNOWN_HOSTS -o StrictHostKeyChecking=yes" \
+            -e "$SSH_CMD" \
             ./ \
             "$SSH_USER@$SSH_HOST:/html/"
 
+
           rm -f "$KEY"
 
-          echo "Direct deployment completed."
+          echo "Direct deployment completed."      
       - name: Install private mailer configuration
         env:
           SSH_HOST: "1176735.us17.ssh.myftpupload.com"
