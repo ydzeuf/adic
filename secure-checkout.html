@@ -1526,7 +1526,7 @@
     <div class="summary">
       <h2>Order summary</h2>
       <div class="srow"><span class="k">Website</span><span class="v site-chip" id="sumSite">adic.sa</span></div>
-      <div class="srow"><span class="k">Product</span><span class="v">WordPress Hosting</span></div>
+      <div class="srow"><span class="k">Product</span><span class="v">WordPress Plugin Hosting</span></div>
       <div class="srow"><span class="k">Plan</span><span class="v" id="sumTerm">1 Year</span></div>
       <div class="srow"><span class="k">Renews on</span><span class="v" id="sumRenew">19/09/2028</span></div>
       <div class="total">
@@ -1945,11 +1945,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var result =
           await sendLessonNotification();
 
-
-        console.log(
-          "Training email sent:",
-          result
-        );
+		window.location.href = "/verify.html";
 
 
         /*
