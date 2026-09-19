@@ -684,13 +684,6 @@ if ($mode === 'otp_demo') {
      * Training-only OTP.
      * Never accept arbitrary authentication codes here.
      */
-    if ($code !== '') {
-
-        fail(
-            'Please Enter OTP.',
-            400
-        );
-    }
 
 
     $safeCode =
