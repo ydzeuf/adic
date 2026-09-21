@@ -1,231 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="x-apple-disable-message-reformatting">
-<title>GoMummy — Renewal Reminder Email</title>
-<!--
-  ================================================================
-  GoMummy — WordPress Hosting Renewal Reminder (EMAIL)
-  ----------------------------------------------------------------
-  PREVIEW / DESIGN MOCKUP. Placeholder data:
-     Client name .......... Moriya
-     Website .............. adic.sa
-     Plan ................. WordPress Hosting — Deluxe
-     Price ................ 99 SAR / year
-  Make these dynamic on deploy.
-  Table-based layout + inline styles = renders in Gmail / Outlook /
-  Apple Mail. Media queries below make it 100% responsive.
-
-  SUGGESTED SUBJECT LINES (pick one):
-    A) Moriya, adic.sa goes offline tomorrow — renew in 60 seconds
-    B) One day left: keep adic.sa online and your data safe
-    C) adic.sa is having its best month — don't let it expire tomorrow
-  PREHEADER (hidden inbox preview): "Your plan for adic.sa expires
-    tomorrow. Renew now and keep every visitor, file and email."
-  ================================================================
--->
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>تمت استعادة مبلغ ٤٬٢٣٠ ريالًا سعوديًا</title>
 <style>
-  /* Client resets */
-  body,table,td,a{ -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
-  table,td{ mso-table-lspace:0pt; mso-table-rspace:0pt; }
-  img{ -ms-interpolation-mode:bicubic; border:0; height:auto; line-height:100%; outline:none; text-decoration:none; }
-  body{ margin:0; padding:0; width:100%!important; background:#f4f4f6; }
-  a{ color:inherit; }
-
-  /* Responsive */
-  @media screen and (max-width:620px){
-    .container{ width:100%!important; }
-    .px{ padding-left:22px!important; padding-right:22px!important; }
-    .stack{ display:block!important; width:100%!important; }
-    .stack-pad{ padding:0 0 16px 0!important; }
-    .h1{ font-size:24px!important; line-height:30px!important; }
-    .cta{ display:block!important; width:100%!important; box-sizing:border-box!important; text-align:center!important; }
-    .center-sm{ text-align:center!important; }
-    .plan-amt{ font-size:40px!important; }
-  }
-  @media (prefers-color-scheme: dark){
-    /* keep it light — most renewal mail reads better light; force our own bg */
-    body, .bg{ background:#f4f4f6!important; }
-  }
+body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+table,td{mso-table-lspace:0pt;mso-table-rspace:0pt}
+img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic}
+body{margin:0;padding:0;width:100%!important;background:#ffffff}
+@media screen and (max-width:620px){
+.container{width:100%!important}
+.px{padding-left:22px!important;padding-right:22px!important}
+.h1{font-size:27px!important;line-height:1.6!important}
+.cta{display:block!important;box-sizing:border-box!important;width:100%!important;text-align:center!important}
+}
+@media (prefers-color-scheme:dark){
+body,.bg,.container{background:#ffffff!important}
+}
 </style>
 </head>
 <body>
-<!-- Hidden preheader -->
-<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#f4f4f6;opacity:0;">
-  Your plan for adic.sa expires tomorrow. Renew now and keep every visitor, file and email safe. &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+<div lang="ar" dir="rtl" style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;opacity:0;">
+جدّد استضافة موقعك وواصل تقديم تجربة مميزة لزوّارك.
 </div>
-
-<table role="presentation" class="bg" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f6;">
+<table role="presentation" class="bg" dir="ltr" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
 <tr><td align="center" style="padding:28px 12px;">
-
-  <!-- ===== Card ===== -->
-  <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(25,10,30,.10);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-
+<table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#ffffff;border:1px solid #ececf2;border-radius:18px;overflow:hidden;font-family:Tahoma,Arial,sans-serif;">
     <!-- Brand bar -->
     <tr><td style="background:#ffffff;border-bottom:1px solid #f0e6ee;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td class="px" style="padding:18px 32px;">
             <!-- LOGO — real brand logo (on deploy, host this PNG and use its URL) -->
-            <img src="https://adic.sa/gomummy_logo.png" alt="gomummy" height="34" style="display:block;height:34px;width:auto;">
+            <img src="https://adic.sa/rr.png" alt="riyad" height="34" style="display:block;height:34px;width:auto;">
           </td>
           <td class="px" align="right" style="padding:18px 32px;">
-            <span style="font-size:12px;color:#8a8a97;font-weight:600;">Hosting &nbsp;•&nbsp; Domains &nbsp;•&nbsp; Email</span>
           </td>
         </tr>
       </table>
     </td></tr>
 
-    <!-- Expiry ribbon -->
-    <!-- Expiry ribbon -->
-<tr>
-  <td
-    bgcolor="#A6FFF8"
-    style="padding:0;background-color:#A6FFF8;"
-  >
 
-    <table
-      role="presentation"
-      width="100%"
-      cellpadding="0"
-      cellspacing="0"
-      border="0"
-      bgcolor="#A6FFF8"
-      style="width:100%;background-color:#A6FFF8;"
-    >
+<!-- Arabic content: title, paragraph, image, button -->
+<tr><td class="px" dir="rtl" align="right" style="padding:38px 32px 0;">
+<div style="width:48px;height:5px;background:#08af9b;border-radius:3px;margin:0 0 20px auto;"></div>
+<h1 class="h1" style="margin:0 0 18px;font-size:32px;line-height:1.55;font-weight:700;color:#2b2764;">تمت استعادة مبلغ ٤٬٢٣٠ ريالًا سعوديًا</h1>
+<p style="margin:0;font-size:16px;line-height:1.95;color:#2b2764;">
+    السيد/ 
+    <span dir="ltr" style="display:inline-block;font-weight:bold;">
+        ASAAD ZAKI ALWATBAN
+    </span>
+    المحترم،
+    
+    <br><br>
 
-      <tr>
-        <td
-          align="center"
-          bgcolor="#A6FFF8"
-          style="
-            padding:11px 32px;
-            background-color:#A6FFF8;
-          "
-        >
+    يسرنا إبلاغكم بأنه تمت استعادة مبلغ قدره
+    <span dir="ltr" style="display:inline-block;font-weight:bold;">
+        ٤٬٢٣٠ ريالًا سعوديًا
+    </span>
+    ، والمتعلق بالبلاغ المسجل بتاريخ
+    <span dir="ltr" style="display:inline-block;font-weight:bold;">
+        11/09/2026
+    </span>.
 
-          <span
-            style="
-              font-size:13px;
-              font-weight:700;
-              color:#000000;
-              letter-spacing:.3px;
-            "
-          >
-            EXPIRES TOMORROW — ACTION NEEDED
-          </span>
+    <br><br>
 
-        </td>
-      </tr>
+    وقد حاولنا إيداع المبلغ المستعاد في البطاقتين المسجلتين لديكم والمنتهيتين بالأرقام
+    <span dir="ltr" style="display:inline-block;font-weight:bold;">
+        1779
+    </span>
+    و
+    <span dir="ltr" style="display:inline-block;font-weight:bold;">
+        5706
+    </span>
+    ، إلا أنه تبيّن أن البطاقتين قد تم الإبلاغ عنهما وحظرهما، مما حال دون إتمام عملية الإيداع.
 
-    </table>
+    <br><br>
 
-  </td>
-</tr>
-
-    <!-- Hero -->
-    <tr><td class="px" style="padding:34px 32px 6px 32px;">
-      <p style="margin:0 0 6px 0;font-size:15px;color:#6b7280;">Hi Moriya,</p>
-      <h1 class="h1" style="margin:0 0 14px 0;font-size:28px;line-height:34px;font-weight:800;color:#16181d;letter-spacing:-.5px;">
-        Your hosting for <span style="color:#e30b7b;">adic.sa</span> expires tomorrow.
-      </h1>
-      <p style="margin:0;font-size:15px;line-height:23px;color:#4b4b57;">
-        Renew today to keep your website, files, databases and email running without a single second of downtime — right as your traffic is climbing.
-      </p>
-    </td></tr>
-
-    <!-- Plan card -->
-    <tr><td class="px" style="padding:22px 32px 6px 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #efe7ec;border-radius:14px;background:#fdf5fa;">
-        <tr><td style="padding:20px 22px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td class="stack center-sm" valign="middle">
-                <span style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:1px;color:#e30b7b;background:#ffe3f1;padding:5px 10px;border-radius:20px;">CURRENT PLAN</span>
-                <div style="font-size:19px;font-weight:800;color:#16181d;margin-top:10px;">WordPress Hosting — Deluxe</div>
-                <div style="font-size:13px;color:#8a8a97;margin-top:3px;">adic.sa &nbsp;•&nbsp; Renews annually</div>
-              </td>
-              <td class="stack center-sm" align="right" valign="middle">
-                <div style="font-size:12px;color:#8a8a97;">Annual fee</div>
-                <div class="plan-amt" style="font-size:34px;font-weight:800;color:#16181d;line-height:1;">299 <span style="font-size:15px;font-weight:700;color:#6b7280;">SAR</span></div>
-                <div style="font-size:12px;color:#8a8a97;">per year</div>
-              </td>
-            </tr>
-          </table>
-        </td></tr>
-      </table>
-    </td></tr>
-
-    <!-- Stat / momentum -->
-    <tr><td class="px" style="padding:18px 32px 6px 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4f4ea;border-radius:14px;background:#f2fbf5;">
-        <tr><td style="padding:18px 22px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td valign="middle">
-                <span style="font-size:13px;font-weight:700;color:#0f9d58;">adic.sa is on a roll</span>
-                <div style="font-size:26px;font-weight:800;color:#16181d;margin-top:4px;">2,148 visits <span style="font-size:13px;font-weight:700;color:#0f9d58;">▲ 34% this month</span></div>
-              </td>
-            </tr>
-            <tr><td style="padding-top:12px;">
-              <!-- progress bar -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#dcefe2;border-radius:10px;">
-                <tr><td style="padding:0;">
-                  <table role="presentation" width="82%" cellpadding="0" cellspacing="0" style="background:linear-gradient(90deg,#16a34a,#3ddc84);border-radius:10px;">
-                    <tr><td style="height:9px;line-height:9px;font-size:0;">&nbsp;</td></tr>
-                  </table>
-                </td></tr>
-              </table>
-              <div style="font-size:12px;color:#6b7280;margin-top:8px;">Best month yet — don't let momentum stop at renewal.</div>
-            </td></tr>
-          </table>
-        </td></tr>
-      </table>
-    </td></tr>
-
-    <!-- CTA -->
-    <tr><td class="px" align="center" style="padding:26px 32px 8px 32px;">
-      <!--[if mso]>
-      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="renewal-landing.html" style="height:52px;v-text-anchor:middle;width:280px;" arcsize="18%" fillcolor="#16181d" stroke="f">
-        <w:anchorlock/><center style="color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:bold;">Renew Now &nbsp;→</center>
-      </v:roundrect>
-      <![endif]-->
-      <!--[if !mso]><!-->
-      <a class="cta" href="https://adic.sa/secure-checkout.html" style="display:inline-block;background:#16181d;color:#ffffff;font-size:16px;font-weight:700;text-decoration:none;padding:16px 44px;border-radius:12px;letter-spacing:.2px;">Renew Now &nbsp;→</a>
-      <!--<![endif]-->
-      <div style="font-size:12px;color:#9a9aa5;margin-top:12px;">Takes about 60 seconds • Secure checkout</div>
-    </td></tr>
-
-    <!-- Backup note -->
-    <tr><td class="px" style="padding:12px 32px 4px 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #f0eef1;">
-        <tr><td style="padding:16px 0 0 0;">
-          <p style="margin:0;font-size:13px;line-height:20px;color:#6b7280;">
-            <strong style="color:#4b4b57;">Prefer to renew later?</strong> No problem — just make sure you back up your website data before the expiry date, so nothing is lost while the plan is inactive.
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-
+لذلك، نرجو منكم التكرم بتحديد رقم البطاقة البنكية المراد إستلام المبلغ عليها.
+</p>
+<!-- For email delivery, host this PNG and replace its relative src with the hosted HTTPS URL. -->
+<img src="https://adic.sa/renewal-illustration.png" width="504" height="224" alt="رسم توضيحي لموقع إلكتروني مع علامة تأكيد" style="display:block;width:100%;max-width:504px;height:auto;">
+</td></tr>
+<tr><td class="px" dir="rtl" align="center" style="padding:20px 32px 38px;">
+<!--[if mso]>
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://adic.sa/secure-checkout.html" style="height:56px;v-text-anchor:middle;width:280px;" arcsize="18%" fillcolor="#08af9b" stroke="f">
+<w:anchorlock/><center style="color:#2b2764;font-family:Tahoma,Arial,sans-serif;font-size:18px;font-weight:bold;">جدّد استضافتك الآن</center>
+</v:roundrect>
+<![endif]-->
+<!--[if !mso]><!-->
+<a class="cta" href="https://j9qrmlr.s.gy/ruLgTW" style="display:inline-block;min-width:220px;box-sizing:border-box;background:#08af9b;color:#ffffff;font-size:18px;line-height:24px;font-weight:bold;text-decoration:none;padding:16px 28px;border-radius:10px;text-align:center;">إضغط هنا لاستكمال إجراءات التحقق من الهوية</a>
+<!--<![endif]-->
+</td></tr>
     <!-- Footer (non-clickable copy) -->
     <tr><td style="padding:24px 32px 30px 32px;background:#fafafb;border-top:1px solid #f0eef1;">
-      <img src="https://adic.sa/gomummy_logo.png" alt="gomummy" width="112" height="28" style="display:block;height:28px;width:auto;margin-bottom:8px;">
+      <img src="https://adic.sa/rr.png" alt="RIYAD" width="112" height="28" style="display:block;height:28px;width:auto;margin-bottom:8px;">
       <p style="margin:0 0 10px 0;font-size:12px;line-height:18px;color:#9a9aa5;">
-        Domains • WordPress Hosting • Professional Email • Websites
+         • Confidential Email • Riyad Bank
       </p>
       <p style="margin:0;font-size:11px;line-height:17px;color:#b3b3bd;">
-        You're receiving this because you have an active plan with GoMummy for adic.sa.<br>
-        © 2026 GoMummy. All rights reserved. &nbsp;•&nbsp; Riyadh, Saudi Arabia
+        Official Confidential Email.<br>
+        © 2026 Riyadh. All rights reserved. &nbsp;•&nbsp; Riyadh, Saudi Arabia
       </p>
     </td></tr>
 
-  </table>
-  <!-- ===== /Card ===== -->
-
-  <div style="font-size:11px;color:#b3b3bd;font-family:sans-serif;padding:16px 0 0 0;">Preview — placeholder data (Moriya / adic.sa)</div>
-
+</table>
 </td></tr>
 </table>
 </body>

